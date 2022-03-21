@@ -9,6 +9,7 @@ class WorkOrderExportLine {
   var _seletion           : boolean            as Selection               = false
   var _exportJobStatus    : PolicyPeriodStatus as ExportJobStatus
   var _exportAsSubmission : boolean            as ExportAsSubmissionValue = false
+  var _linkedJob          : boolean            as LinkedJob               = true
 
   static final var PERIOD_STATUSES   =  PolicyPeriodStatus.getTypeKeys(false)
   static final var BOUND_STATUSES    = {PolicyPeriodStatus.TC_DRAFT, PolicyPeriodStatus.TC_QUOTED, PolicyPeriodStatus.TC_BOUND}
@@ -25,6 +26,7 @@ class WorkOrderExportLine {
     _seletion           = false
     _exportJobStatus    = _job.LatestPeriod.Status
     _exportAsSubmission = false
+    _linkedJob          = true
   }
 
   property get Editable() : boolean {
