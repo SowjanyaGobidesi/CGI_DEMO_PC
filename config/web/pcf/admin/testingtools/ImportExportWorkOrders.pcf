@@ -1,0 +1,273 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterEnter="ixHelper.resetPCFElement(CurrentLocation);importFile = null;ixHelper.resetImportPCFSelection()"
+    canEdit="true"
+    countsAsWork="false"
+    id="ImportExportWorkOrders"
+    onResume="ixHelper.resetPCFElement(CurrentLocation);importFile = null;ixHelper.resetImportPCFSelection()"
+    showUpLink="true"
+    startInEditMode="true"
+    title="&quot;Import Export Work Orders&quot;">
+    <Variable
+      initialValue="new com.guidewire.proserve.pc.importexport.web.ImportExportPCFHelper()"
+      name="ixHelper"
+      type="com.guidewire.proserve.pc.importexport.web.ImportExportPCFHelper"/>
+    <Variable
+      name="importFile"
+      type="gw.api.web.WebFile"/>
+    <Screen
+      editable="true">
+      <CardViewPanel>
+        <Card
+          id="ExportCard"
+          title="&quot;Export&quot;">
+          <DetailViewPanel>
+            <InputColumn>
+              <TextInput
+                editable="true"
+                id="AccountNumber"
+                label="&quot;Account Number&quot;"
+                value="ixHelper.AccountNumber"/>
+              <TextInput
+                editable="true"
+                id="WorkOrderNumber"
+                label="&quot;Work Order Number&quot;"
+                value="ixHelper.WorkOrderNumber"/>
+              <TextInput
+                editable="true"
+                id="PolicyNumber"
+                label="&quot;Policy Number&quot;"
+                value="ixHelper.PolicyNumber"/>
+              <ContentInput>
+                <Link
+                  action="ixHelper.findWorkOrders(CurrentLocation)"
+                  id="SearchWorkOrders"
+                  label="&quot;Search Work Orders&quot;"
+                  styleClass="bigButton"/>
+              </ContentInput>
+            </InputColumn>
+          </DetailViewPanel>
+          <PanelRef>
+            <TitleBar
+              title="&quot;Work Orders on Account&quot;"/>
+            <Toolbar>
+              <ToolbarButton
+                action="ixHelper.exportWorkOrder()"
+                download="attachment"
+                id="ToolbarButton"
+                label="&quot;Export Selected Work Orders&quot;"
+                showConfirmMessage="false"/>
+            </Toolbar>
+            <ListViewPanel>
+              <RowIterator
+                checkBoxVisible="true"
+                editable="true"
+                elementName="workOrder"
+                id="WorkOrdersIter"
+                value="ixHelper.WorkOrders"
+                valueType="java.util.List&lt;com.guidewire.proserve.pc.importexport.web.WorkOrderExportLine&gt;">
+                <Row
+                  editable="true">
+                  <CheckBoxCell
+                    editable="workOrder.LinkedJob"
+                    id="SelectWorkOrder"
+                    value="workOrder.Selection">
+                    <PostOnChange
+                      onChange="workOrder.toggleWorkOrderToExport()"/>
+                  </CheckBoxCell>
+                  <DateCell
+                    id="CloseDate"
+                    label="&quot;Close Date&quot;"
+                    sortOrder="1"
+                    value="workOrder.Job.CloseDate"/>
+                  <TextCell
+                    action="JobForward.go(workOrder.Job)"
+                    id="WorkOrderNumber"
+                    label="&quot;WorkOrder Number&quot;"
+                    value="workOrder.Job.JobNumber"/>
+                  <TextCell
+                    enableSort="false"
+                    fontColor="workOrder.WorkOrderTypeColor"
+                    id="WorkOrderType"
+                    label="&quot;WorkOrder Type&quot;"
+                    value="workOrder.WorkOrderTypeDescription"/>
+                  <TextCell
+                    enableSort="false"
+                    id="JobComments"
+                    label="&quot;Comments&quot;"
+                    value="workOrder.Job.Description"/>
+                  <TextCell
+                    enableSort="false"
+                    id="JobStatus"
+                    label="&quot;Job Status&quot;"
+                    value="workOrder.Job.DisplayStatus"/>
+                  <RangeCell
+                    editable="workOrder.LinkedJob"
+                    enableSort="false"
+                    id="ExportJobStatus"
+                    label="&quot;Export as Status&quot;"
+                    required="true"
+                    value="workOrder.ExportJobStatus"
+                    valueRange="workOrder.AvailableExportAsStatuses"
+                    valueType="typekey.PolicyPeriodStatus"/>
+                  <CheckBoxCell
+                    editable="workOrder.ExportAsSubmissionIsEditable"
+                    id="ExportAsSubmission"
+                    label="&quot;Export as Submission&quot;"
+                    value="workOrder.ExportAsSubmissionValue"
+                    visible="false">
+                    <PostOnChange
+                      onChange="workOrder.onChangeOfExportAsSubmission()"/>
+                  </CheckBoxCell>
+                  <TextCell
+                    action="PolicyFileForward.go(workOrder.Job.LatestPeriod.PolicyNumber)"
+                    available="not (workOrder.Job.LatestPeriod.PolicyNumber == &quot;Unassigned&quot;)"
+                    enableSort="false"
+                    id="PolicyNumber"
+                    label="&quot;Policy Number&quot;"
+                    value="workOrder.Job.LatestPeriod.PolicyNumber"/>
+                  <TextCell
+                    id="Product"
+                    label="&quot;Product&quot;"
+                    sortBy="workOrder.Job.Policy.ProductCode"
+                    value="workOrder.Job.Policy.Product.DisplayName"/>
+                  <TextCell
+                    enableSort="false"
+                    id="Underwriter"
+                    label="&quot;Underwriter&quot;"
+                    value="workOrder.Job.Underwriter.DisplayName"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </PanelRef>
+          <PanelRef>
+            <TitleBar
+              id="XML"
+              title="&quot;XML Output&quot;"/>
+            <DetailViewPanel>
+              <InputColumn>
+                <TextAreaInput
+                  editable="true"
+                  id="XMLStringOutput"
+                  label="&quot;Cut and paste the below XML into the import tool:&quot;"
+                  labelAbove="true"
+                  numRows="30"
+                  value="ixHelper.OutputXML"
+                  visible="ixHelper.OutputXML != null"
+                  __disabled="true"/>
+              </InputColumn>
+            </DetailViewPanel>
+          </PanelRef>
+        </Card>
+        <Card
+          id="ImportCard"
+          title="&quot;Import&quot;"
+          visible="java.lang.System.getProperty(&quot;gw.server.mode&quot;) == &quot;dev&quot;">
+          <PanelRef
+            editable="true">
+            <TitleBar
+              id="XMLInput"
+              title="&quot;XML Input&quot;"/>
+            <DetailViewPanel>
+              <InputColumn>
+                <ContentInput/>
+                <TextAreaInput
+                  editable="true"
+                  id="XMLStringInput"
+                  label="&quot;Paste the exported XML below and hit import:&quot;"
+                  labelAbove="true"
+                  numEntriesPerColumn="60"
+                  numRows="30"
+                  value="ixHelper.InputXML"
+                  __disabled="true"/>
+                <FileInput
+                  editable="true"
+                  id="Attachment"
+                  label="&quot;Upload the import file and hit import:&quot;"
+                  required="true"
+                  value="importFile"></FileInput>
+              </InputColumn>
+              <InputColumn>
+                <ContentInput>
+                  <Link
+                    action="ixHelper.importWorkOrders(importFile)"
+                    id="ImportButton"
+                    label="&quot;Import Work Orders&quot;"
+                    styleClass="bigButton"/>
+                </ContentInput>
+              </InputColumn>
+            </DetailViewPanel>
+          </PanelRef>
+          <PanelRef>
+            <TitleBar
+              title="&quot;Imported Work Orders on Account&quot;"/>
+            <Toolbar/>
+            <ListViewPanel>
+              <RowIterator
+                checkBoxVisible="true"
+                editable="false"
+                elementName="job"
+                id="WorkOrdersImportedIter"
+                value="ixHelper.ImportedWorkOrders"
+                valueType="java.util.List&lt;entity.Job&gt;">
+                <Row>
+                  <DateCell
+                    id="CreateTime"
+                    label="&quot;Create Date&quot;"
+                    sortOrder="1"
+                    value="job.CreateTime"/>
+                  <TextCell
+                    action="JobForward.go(job)"
+                    id="WorkOrderNumber"
+                    label="&quot;WorkOrder Number&quot;"
+                    value="job.JobNumber"/>
+                  <TextCell
+                    enableSort="false"
+                    id="WorkOrderType"
+                    label="&quot;WorkOrder Type&quot;"
+                    value="job.DisplayType"/>
+                  <TextCell
+                    enableSort="false"
+                    id="JobComments"
+                    label="&quot;Comments&quot;"
+                    value="job.Description"/>
+                  <TextCell
+                    enableSort="false"
+                    id="JobStatus"
+                    label="&quot;Job Status&quot;"
+                    value="job.DisplayStatus"/>
+                  <TextCell
+                    action="PolicyFileForward.go(job.LatestPeriod.PolicyNumber)"
+                    available="not (job.LatestPeriod.PolicyNumber == &quot;Unassigned&quot;)"
+                    enableSort="false"
+                    id="PolicyNumber"
+                    label="&quot;New Policy #&quot;"
+                    value="job.LatestPeriod.PolicyNumber"/>
+                  <TextCell
+                    action="AccountFileForward.go(job.LatestPeriod.Policy.Account)"
+                    enableSort="false"
+                    id="AccountNumber"
+                    label="&quot;New Account #&quot;"
+                    value="job.LatestPeriod.Policy.Account.AccountNumber"/>
+                  <TextCell
+                    id="Product"
+                    label="&quot;Product&quot;"
+                    sortBy="job.Policy.ProductCode"
+                    value="job.Policy.Product.DisplayName"/>
+                  <TextCell
+                    enableSort="false"
+                    id="Underwriter"
+                    label="&quot;Underwriter&quot;"
+                    value="job.Underwriter.DisplayName"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </PanelRef>
+        </Card>
+      </CardViewPanel>
+    </Screen>
+  </Page>
+</PCF>

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <!-- LocationGroup for the "Admin" tab pages -->
+  <LocationGroup
+    canVisit="perm.Organization.search or perm.System.orgviewagency or perm.System.orgviewbasic or perm.System.orgviewextmgt or perm.System.prodcodeviewbasic or perm.System.prodcodeviewprefuw"
+    id="Admin"
+    menuActions="AdminMenuActions()"
+    menuTree="AdminMenuTree(treeModel, org, group)"
+    title="DisplayKey.get(&quot;Web.Admin.LocationGroup.Title&quot;)">
+    <LocationEntryPoint
+      signature="Admin()"/>
+    <LocationEntryPoint
+      signature="Admin(group : Group)"/>
+    <LocationEntryPoint
+      signature="Admin(org : Organization)"/>
+    <LocationEntryPoint
+      signature="Admin(affinityGroup : AffinityGroup)"/>
+    <Variable
+      initialValue="null"
+      name="group"
+      type="Group"/>
+    <Variable
+      initialValue="null"
+      name="org"
+      type="Organization"/>
+    <Variable
+      initialValue="new gw.api.admin.PCOrganizationTreeModel(org, group, false)"
+      name="treeModel"
+      type="gw.api.admin.PCOrganizationTreeModel"/>
+    <Variable
+      initialValue="null"
+      name="affinityGroup"
+      type="AffinityGroup"/>
+    <LocationRef
+      location="UsersAndSecurity()"/>
+    <LocationRef
+      location="Rating()"/>
+    <LocationRef
+      location="BusinessSettings()"/>
+    <LocationRef
+      location="Monitoring()"/>
+    <LocationRef
+      location="Utilities()"/>
+    <LocationRef
+      hideIfDisabled="true"
+      location="ImportExportWorkOrderLG()"/>
+  </LocationGroup>
+</PCF>
