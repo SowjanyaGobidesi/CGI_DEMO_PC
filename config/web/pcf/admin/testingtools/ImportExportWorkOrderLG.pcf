@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <LocationGroup
+    id="ImportExportWorkOrderLG"
+    title="&quot;Import/Export Work Orders&quot;">
+    <LocationRef
+      location="ImportExportWorkOrders()"/>
+  </LocationGroup>
+</PCF>
