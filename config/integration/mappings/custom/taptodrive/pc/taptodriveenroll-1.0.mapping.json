@@ -1,0 +1,20 @@
+{
+  "schemaName": "taptodrive.pc.taptodriveenrollrequest-1.0",
+  "mappers": {
+    "Tap2DriveEnrollRequest": {
+      "schemaDefinition": "Tap2DriveEnrollRequest",
+      "root": "entity.PolicyDriver",
+      "properties": {
+        "email": {
+          "path": "((PolicyDriver as PolicyContactRole).AccountContactRole.AccountContact.Contact as Person).EmailAddress1"
+        },
+        "password": {
+          "path": "PolicyDriver.Tap2DriveRecord_Ext.Tap2DriveStatus.getCode ()"
+        },
+        "driverKey": {
+          "path": "PolicyDriver.Tap2DriveRecord_Ext.UniqueDriverID"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="Tap2DriveRecordsDV">
+    <Require
+      name="policyDriver"
+      type="PolicyDriver"/>
+    <Require
+      name="tap2DriveRecord"
+      type="Tap2DriveRecord_Ext"/>
+    <InputColumn
+      minWidth="0px">
+      <InputSet
+        visible="tap2DriveRecord != null">
+        <Label
+          label="DisplayKey.get(&quot;Web.PersonalAuto.Tap2DriveRecord.NoRecordsOnFile_Ext&quot;)"
+          visible="tap2DriveRecord.Tap2DriveStatus == Tap2DriveStatus_Ext.TC_REPORTUNAVAILABLE"
+          __disabled="true"/>
+        <Label
+          label="DisplayKey.get(&quot;Web.PersonalAuto.Tap2DriveRecord.WaitingForRecords_Ext&quot;)"
+          visible="tap2DriveRecord.Tap2DriveStatus == Tap2DriveStatus_Ext.TC_PENDINGENROLLMENT"
+          __disabled="true"/>
+        <Label
+          id="Tap2DriveNotFound"
+          label="DisplayKey.get(&quot;Web.PersonalAuto.Tap2DriveRecord.RecordsNotFound_Ext&quot;)"
+          visible="tap2DriveRecord.Tap2DriveStatus == null"
+          __disabled="true"/>
+      </InputSet>
+    </InputColumn>
+    <InputColumn>
+      <InputSet>
+        <TextInput
+          id="BrakingPoints"
+          label="DisplayKey.get(&quot;Web.PersonalAuto.Tap2DriveRecord.Braking&quot;)"
+          value="tap2DriveRecord.BrakingPoint"
+          valueType="java.math.BigDecimal"/>
+        <TextInput
+          id="Speeding"
+          label="DisplayKey.get(&quot;Web.PersonalAuto.Tap2DriveRecord.Speeding&quot;)"
+          value="tap2DriveRecord.SpeedingPoint"
+          valueType="java.math.BigDecimal"/>
+        <TextInput
+          id="Acceleration"
+          label="DisplayKey.get(&quot;Web.PersonalAuto.Tap2DriveRecord.Acceleration&quot;)"
+          value="tap2DriveRecord.AccelerationPoint"
+          valueType="java.math.BigDecimal"/>
+        <TextInput
+          id="Route"
+          label="DisplayKey.get(&quot;Web.PersonalAuto.Tap2DriveRecord.Route&quot;)"
+          value="tap2DriveRecord.Route"
+          __disabled="true"/>
+        <TextInput
+          id="PhoneCall"
+          label="DisplayKey.get(&quot;Web.PersonalAuto.Tap2DriveRecord.Calling&quot;)"
+          value="tap2DriveRecord.CallingPoint"
+          valueType="java.math.BigDecimal"/>
+      </InputSet>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<extension
+  xmlns="http://guidewire.com/datamodel"
+  entityName="PolicyDriver">
+  <onetoone
+    fkentity="Tap2DriveRecord_Ext"
+    name="Tap2DriveRecord_Ext"
+    nullok="true"/>
+  <column
+    name="EnabledForTap2Drive_Ext"
+    nullok="true"
+    type="bit"/>
+</extension>

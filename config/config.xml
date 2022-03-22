@@ -1,0 +1,1287 @@
+<?xml version="1.0"?>
+
+<config xmlns="http://guidewire.com/config">
+
+  <registry roles="batch, workqueue, scheduler, messaging, startable, ui" />
+
+
+  <!-- Max number of results returned by searching contact, specified for performance purpose when searching external contact system -->
+  <!-- NOTE: this variable was renamed from "ContactSearchMaxResult" to be consistent with CC's usage -->
+  <param name="MaxContactSearchResults" value="100"/>
+
+  <!-- Velocity parameters; can be overridden -->
+  <!-- NOTE velocimacro.library.autoreload MUST be set false in production -->
+  <!-- NOTE file.resource.loader.modificationCheckInterval SHOULD be set to -1 in production (disables reloading the files) -->
+  <!-- NOTE resource.manager.defaultcache.size SHOULD be a prime number larger than total number of templates -->
+  <velocityParam name="file.resource.loader.cache" value="true"/>
+  <velocityParam name="file.resource.loader.modificationCheckInterval" value="-1"/>
+  <velocityParam name="velocimacro.library" value="pc_VelocityMacros.vm"/>
+  <velocityParam name="velocimacro.permissions.allow.inline" value="true"/>
+  <velocityParam name="velocimacro.library.autoreload" value="false"/>
+  <velocityParam name="velocimacro.permissions.allow.inline.to.replace.global" value="true"/>
+  <velocityParam name="resource.manager.defaultcache.size" value="127"/>
+
+  <!-- H2 (meant for demo/quickstart use only!) -->
+  <!-- H2
+  <database name="PolicyCenterDatabase" driver="dbcp" dbtype="h2" printcommands="false"
+            checker="false">
+    <param name="jdbcURL" value="jdbc:h2:file:/tmp/guidewire/pc"/>
+    <param name="jdbcURLtest" value="jdbc:h2:file:/tmp/guidewire/pctest"/>
+    <param name="CACHE_SIZE" value="32000"/>
+      <databasestatistics>
+      <tablestatistics name="pc_userroleassign">
+        <histogramstatistics name="CreateTime" numbuckets="75"/>
+      </tablestatistics>
+      <tablestatistics name="pc_activity">
+        <histogramstatistics name="CloseDate" numbuckets="75"/>
+      </tablestatistics>
+    </databasestatistics>
+  </database>
+  -->
+
+  <!-- Mappings of logical to physical tablespace names are required for Oracle. -->
+  <!-- Oracle
+  <database name="PolicyCenterDatabase" driver="dbcp" dbtype="oracle">
+    <param name="jdbcURL" value="jdbc:oracle:thin:USER/PASSWORD@HOSTNAME:PORT:ORACLE_SID"/>
+    <tablespacemapping logicalname="ADMIN" physicalname="PC_ADMIN"/>
+    <tablespacemapping logicalname="OP" physicalname="PC_OP"/>
+    <tablespacemapping logicalname="TYPELIST" physicalname="PC_TYPELIST"/>
+    <tablespacemapping logicalname="INDEX" physicalname="PC_INDEX"/>
+    <tablespacemapping logicalname="STAGING" physicalname="PC_STAGING"/>
+    <upgrade collectstorageinstrumentation="false">
+      <versiontriggers dbmsperfinfothreshold="600" />
+    </upgrade>
+    <databasestatistics>
+      <tablestatistics name="pc_userroleassign">
+        <histogramstatistics name="CreateTime" numbuckets="75"/>
+      </tablestatistics>
+    </databasestatistics>
+  </database>
+  -->
+
+  <!-- SQL Server
+  <database name="PolicyCenterDatabase" driver="dbcp" dbtype="sqlserver" checker="false">
+    <param name="jdbcURL" value="jdbc:sqlserver://HOSTNAME:1433;DatabaseName=DBNAME;User=USER;Password=PASSWORD"/>
+    <param name="checker.threads"  value="1" />
+    <upgrade collectstorageinstrumentation="false">
+      <versiontriggers dbmsperfinfothreshold="600" />
+    </upgrade>
+    <databasestatistics>
+      <tablestatistics name="pc_userroleassign">
+        <histogramstatistics name="CreateTime" numbuckets="75"/>
+      </tablestatistics>
+    </databasestatistics>
+  </database>
+  -->
+
+  <!-- Policy creation upper and lower year limits.
+    Minimum year is a hard limit (minimum value is 1000)
+  -->
+  <param name="MinimumPolicyCreationYear" value="1000"/>
+  <!-- Policy creation upper and lower year limits.
+    Maximum year is computed at runtime by adding the supplied delta value to the year
+       of the current date (minimum value is 0)
+  -->
+  <param name="MaximumPolicyCreationYearDelta" value="1"/>
+
+
+  <!--
+    Parameters that control clustering
+  -->
+
+  <!-- Is clustering enabled? -->
+  <param name="ClusteringEnabled" value="false"/>
+
+  <!--
+    The maximum number of retries for each cluster node to perform synchronized product model update operations.
+  -->
+  <param name="ClusteringProductModelUpdateMaxRetries" value="25"/>
+
+  <!--
+    Argument (in ms) used to calculate the timeout per retry for each cluster node to perform synchronized product model update operations.
+    On each retry, each cluster node will wait ClusteringProductModelUpdateRetryTimeout ms longer than on the last retry, up to a maximum
+    wait of ClusteringProductModelUpdateSleepTimeCeiling ms per retry.
+  -->
+  <param name="ClusteringProductModelUpdateRetryTimeout" value="5000"/>
+
+  <!-- Ceiling on the sleep time (in ms) per retry for each cluster node to perform synchronized product model update operations. -->
+  <param name="ClusteringProductModelUpdateSleepTimeCeiling" value="50000" />
+
+  <!--   Option to not use leap year days in eff dated calculations -->
+  <param name="IgnoreLeapDayForEffDatedCalc" value="true"/>
+
+  <!--
+    Cluster member database record update interval (in seconds). The same interval is used to reload list of cluster
+    members from the database.
+  -->
+  <param name="ClusterMemberRecordUpdateIntervalSecs" value="60"/>
+
+  <!--
+    Number of minutes between each cluster statistics monitor logging (0 means disable statistics logging).
+  -->
+  <param name="ClusterStatisticsMonitorIntervalMins" value="60"/>
+
+  <!-- denotes the username of the unrestricted user.  If not specified, defaults to "su" -->
+  <param name="UnrestrictedUserName" value="su"/>
+
+  <!-- Indicates if resoruces are mutable on this server. Studio uses this to
+       determine whether or not to enable modification of resources. -->
+  <param name="ResourcesMutable" value="true"/>
+
+  <!-- Indicates whether beans can be put in a FrozenSet for inter-cluster transfer. -->
+  <param name="FrozenSetsEnabled" value="false"/>
+
+  <!--
+    Cached range size key generator uses when generating individual keys. This
+    cannot be a normal parameter in the database because we need it before the
+    database has been initialized (and possibly upgraded)
+  -->
+  <param name="KeyGeneratorRangeSize" value="100"/>
+
+  <!-- The keyboard shortcut for the Actions button -->
+  <param name="ActionsShortcut" value="A"/>
+
+  <!-- The keyboard shorcut for the Uplink button -->
+  <param name="UplinkShortcut" value="Up"/>
+
+  <!-- Set to true to have Address Verification failures as errors instead of warnings.  Meaningless if 'EnableAddressVerification' is set to false -->
+  <param name="AddressVerificationFailureAsError" value="false"/>
+
+  <!--Whether the Documents list should display Edit/Upload buttons.
+         Set this to false if the IDocumentContentSource integration mechanism doesn't support them. -->
+  <param name="DisplayDocumentEditUploadButtons" value="true"/>
+
+  <!-- The Content-Disposition setting to use when document content is returned
+       directly to the browser. Must be either 'inline' (the default) or
+       'attachment' -->
+  <param name="DocumentContentDispositionMode" value="inline"/>
+
+  <!-- If true, allows multiple browser tabs under the same session to navigate independently. Adds a parameter to the end of the URL, so do not use if a consistent URL is required. This is an experimental feature and is NOT SUPPORTED for customer use; it may be changed or removed in a future release -->
+  <param name="AllowMultipleTabs" value="false"/>
+
+  <!-- The maximum number of autocomplete suggestions to show. -->
+  <param name="AutocompleteLimit" value="10"/>
+
+  <!-- The number of days to keep batch process history before they can be deleted -->
+  <param name="BatchProcessHistoryPurgeDaysOld" value="45"/>
+
+  <!-- Setting to enable or disable parallelism (oracle only) in the populate search columns batch process. -->
+  <param name="BatchProcessPopulateSearchColumnsParallelDML" value="true"/>
+
+  <!-- Time period (in minutes) when cached items are considered "active", i.e. the cache should give higher priority to preserve these items. -->
+  <!-- This can be thought of as the period when items are being heavily used, e.g. how long a user stays on a page. It should be less than the reaping time. -->
+  <param name="GlobalCacheActiveTimeMinutes" value="5"/>
+
+  <!-- The percentage of the heap to allocate to the global cache. -->
+  <param name="GlobalCacheSizePercent" value="15"/>
+
+  <!-- Time (in minutes) since last use before cached items are considered eligible for reaping. This can be thought of as the period during which an entity is most likely to be re-used. -->
+  <param name="GlobalCacheReapingTimeMinutes" value="15"/>
+
+  <!-- Time (in minutes) since last write before cached items are considered stale and eligible for reaping. -->
+  <param name="GlobalCacheStaleTimeMinutes" value="60"/>
+
+  <!-- Period of time (in minutes) to preserve statistics for global cache -->
+  <param name="GlobalCacheStatsWindowMinutes" value="30"/>
+
+  <!-- The amount of space to allocate to the global cache. If this value is specified, it
+       will take precendence over GlobalCacheSizePercent.
+  <param name="GlobalCacheSizeMegabytes" value=""/>
+  -->
+
+  <!-- This parameter denotes the period of time (in days), in addition to today,
+       for how long statistics are preserved for historical comparison. -->
+  <param name="GlobalCacheStatsRetentionPeriodDays" value="7"/>
+
+  <!-- This parameter determines whether or not detailed statistics should be collected. -->
+  <param name="GlobalCacheDetailedStats" value="false"/>
+
+  <!-- If clustering is enabled, whether to check this server's configuration against the other
+          servers in the cluster. -->
+  <param name="ConfigVerificationEnabled" value="true"/>
+
+  <!-- Whether a class name must be listed in the serialization whitelist to allow deserialization
+       of its respective instances. -->
+  <param name="SerializationWhitelistEnabled" value="false"/>
+
+  <!-- The Content-Disposition setting to use when generated content (exports, printing, etc, but _not_ documents) is returned directly to the browser. Must be either 'inline' or 'attachment' (the default) -->
+  <param name="DefaultContentDispositionMode" value="attachment"/>
+
+  <!-- Enable to provide address verification warnings -->
+  <param name="EnableAddressVerification" value="false"/>
+
+  <!-- The time between refreshes of the group cache, in seconds -->
+  <param name="GroupCacheRefreshIntervalSecs" value="600"/>
+
+  <!-- If true, the help text for an input will be displayed when the user moves mouse over the input -->
+  <param name="InputHelpTextOnMouseOver" value="true"/>
+
+  <!-- The number of days to keep instrumentation information for a distributed worker instance before they can be deleted -->
+  <param name="InstrumentedWorkerInfoPurgeDaysOld" value="45"/>
+
+  <!-- The maximum allowable file size (in megabytes) which may be uploaded. Any attempt to upload a file larger than this will fail. Since the uploaded document must be handled on the server, this parameter protects the server from possible memory consumption problems. -->
+  <param name="MaximumFileUploadSize" value="150"/>
+
+  <!--The maximum allowable total size (in megabytes) per session for documents which may be uploaded before commiting to the DMS. Any attempt to upload one or more files consuming more space than this on a server within a session will fail. Since the uploaded document(s) must be handled on the server, this parameter protects the server from possible memory consumption problems.-->
+  <param name="MaximumTotalUploadSize" value="150"/>
+
+  <!-- The maximum number of files which may be uploaded at a time before a commit.
+       Any attempt to upload more files than this will fail. 0 implies no limit. -->
+  <param name="MaximumFileUploadCount" value="200"/>
+
+  <!-- Path to FOP user configuration -->
+  <param name="PrintFOPUserConfigFile" value=""/>
+
+  <!-- Name of font to use for output -->
+  <param name="PrintFontFamilyName" value="sans-serif"/>
+
+  <!-- Font size of normal print text -->
+  <param name="PrintFontSize" value="10pt"/>
+
+  <!-- Font size of headers in print text -->
+  <param name="PrintHeaderFontSize" value="16pt"/>
+
+  <!-- Total size of a line of print text -->
+  <param name="PrintLineHeight" value="14pt"/>
+
+  <!-- When printing a list with elements, the list will be split into blocks of this size,
+   	with a title page introducing each block of elements. Large block sizes consume more memory
+	during printing - for example a block size of several thousand could cause an out of memory error -->
+  <param name="PrintListViewBlockSize" value="20"/>
+
+  <!-- When printing a list nested inside a detail view, the list will be truncated to this size.
+       Nested lists cause the PDF generator to consume a lot of memory so this parameter is used to
+       prevent long nested lists from causing memory problems -->
+  <param name="PrintMaxNestedListViewSize" value="100"/>
+
+  <!-- Font size of text within a list view -->
+  <param name="PrintListViewFontSize" value="10pt"/>
+
+  <!-- Bottom margin size of print page -->
+  <param name="PrintMarginBottom" value="0.5in"/>
+
+  <!-- Left margin size of print page -->
+  <param name="PrintMarginLeft" value="1in"/>
+
+  <!-- Right margin size of print page -->
+  <param name="PrintMarginRight" value="1in"/>
+
+  <!-- Top margin size of print page -->
+  <param name="PrintMarginTop" value="0.5in"/>
+
+  <!-- When printing to PDF, ClaimCenter first creates an intermediate XML file as input to a PDF generator.
+   	If the input is very large the PDF generator may run out of memory. Setting this parameter to a non negative
+   	value caps the size of the XML input file; if a user attempts to print something that violates this cap they
+   	will get an error. The cap value is in MB -->
+  <param name="PrintMaxPDFInputFileSize" value="-1"/>
+
+  <!-- Total print height of page -->
+  <param name="PrintPageHeight" value="8.5in"/>
+
+  <!-- Total print width of page -->
+  <param name="PrintPageWidth" value="11in"/>
+
+  <!-- Default base output filename for output generation. The default is "Print". -->
+  <param name="PrintDefaultBaseFileName" value="Print"/>
+
+  <!-- Default base output file extension for PDF documents.  The default is "pdf". -->
+  <param name="PrintPdfDefaultBaseFileExtension" value="pdf"/>
+
+  <!-- MIME type used for generated PDF output files. Defaults to "application/pdf". -->
+  <param name="PrintPdfMimeType" value="application/pdf"/>
+
+  <!-- Default base output file extension for CSV documents.  The default is "csv". -->
+  <param name="PrintCsvDefaultBaseFileExtension" value="csv"/>
+
+  <!-- MIME type used for generated CSV output files. Defaults to "application/excel". -->
+  <param name="PrintCsvMimeType" value="application/excel"/>
+
+  <!-- The number of days to keep profiler data before they can be deleted -->
+  <param name="ProfilerDataPurgeDaysOld" value="30"/>
+
+  <!-- The keyboard shortcut to activate the QuickJump box -->
+  <param name="QuickJumpShortcut" value="/"/>
+
+  <!-- Multicurrency display mode: SINGLE = Single currency mode. MULTIPLE = Always in multiple currency mode. -->
+  <param name="MulticurrencyDisplayMode" value="SINGLE"/>
+
+  <!--
+    Default/Base currency for all Financials; all financial amounts
+    are assumed to be in this currency.
+  -->
+  <param name="DefaultApplicationCurrency" value="usd"/>
+
+  <!-- Default rounding mode for money and currency amount calculations.
+       Allowable values (from java.math.RoundingMode) are
+       UP,DOWN,CEILING,FLOOR,HALF_UP,HALF_DOWN,HALF_EVEN,UNNECESSARY
+       Guidewire strongly recommends one of: HALF_UP, HALF_EVEN
+       This value is available by calling CurrencyUtil.getRoundingMode()-->
+  <param name="DefaultRoundingMode" value="HALF_UP"/>
+
+  <!--
+    URL to use in exit points which view items in the claim system. If integrating with ClaimCenter this parameter
+    can be set to the ClaimCenter base URL (e.g. http://server/cc) and the exit points will add the appropriate
+    ClaimCenter entry point. If integrating with another claim system the ExitPoints will also need to be changed
+    to set up the parameters required by that system. If this parameter is omitted or set to the empty string the
+    buttons in the UI that take you to the exit points will be hidden.
+  -->
+  <param name="ClaimSystemURL" value=""/>
+
+  <!--
+    URL to use in exit points which view items in the Billing system. If integrating with BillingCenter this parameter
+    can be set to the BillingCenter base URL (e.g. http://server/bc) and the exit points will add the appropriate
+    BillingCenter entry point. If integrating with another billing system the ExitPoints will also need to be changed
+    to set up the parameters required by that system. If this parameter is omitted or set to the empty string the
+    buttons in the UI that take you to the exit points will be hidden.
+  -->
+  <param name="BillingSystemURL" value=""/>
+
+  <!--
+    URL to use in exit points which view items in the Payment system. If integrating with another billing system the
+    ExitPoints will need to be changed to set up the parameters required by that system. If this parameter is omitted
+    or set to the empty string the buttons in the UI that take you to the exit points will be hidden.
+    OOTB it is configured to run with a demo payment system
+  -->
+  <param name="PaymentSystemURL" value="pc"/>
+
+  <!--
+    In Contact File search, if the number of billing accounts to retrieve exceeds the BillingNumAccountWarningThreshold
+    value, the user is prompted with a warning before proceeding.
+  -->
+  <param name="BillingNumAccountWarningThreshold" value="10"/>
+
+  <!-- 
+    Flag to restrict search results to items that the user has permission to view, on contact search screens.
+    This does not impact any other searches on PolicyCenter.
+  -->
+  <param name="RestrictSearchesToPermittedItems" value="true"/>
+
+  <!-- The time between refreshes of the script parameter info cache, in seconds -->
+  <param name="ScriptParametersRefreshIntervalSecs" value="600"/>
+
+  <!-- Time in seconds that a treeview state will be cached. -->
+  <param name="TreeViewRefresh" value="120"/>
+
+  <!-- The threshold year value for determining whether to resolve a two-digit year to the earlier or later century -->
+  <param name="TwoDigitYearThreshold" value="50"/>
+
+  <!-- Name of the UI skin to use -->
+  <param name="UISkin" value="theme-9"/>
+
+  <!-- Whether or not the Gosu compiler generates errors if it detects unreachable code or missing return statements. -->
+  <param name="UnreachableCodeDetection" value="true"/>
+
+  <!-- Whether or not the Gosu compiler generates warnings if an implicit coercion is occuring in a program. -->
+  <param name="WarnOnImplicitCoercion" value="true"/>
+
+  <!-- The location of the web resources directory under the root of the tomcat config directory -->
+  <param name="WebResourcesDir" value="resources"/>
+
+  <!-- Default timeout in seconds for Web UI AJAX requests -->
+  <param name="WebUIAJAXTimeout" value="600"/>
+
+  <!-- The maximum number of threads in the work queue thread pool.
+       Must be greater or equal to WorkQueueThreadPoolMinSize. All threads which are not core threads
+       are additional on-demand threads which and are terminated if idle after the timeout.  Default is 50. -->
+  <param name="WorkQueueThreadPoolMaxSize" value="50"/>
+
+  <!-- The minimum number of threads in the work queue thread pool (i.e. core threads). Default is 0. -->
+  <param name="WorkQueueThreadPoolMinSize" value="0"/>
+
+  <!-- Keep alive timeout (in seconds) for additional on-demand threads in the work queue thread pool.
+       An additional on-demand thread is terminated if it is idle for more than this time. -->
+  <param name="WorkQueueThreadsKeepAliveTime" value="60"/>
+
+  <!-- The maximum number of workitems a workqueue writer should create per transaction -->
+  <param name="WorkItemCreationBatchSize" value="100"/>
+
+  <!-- The maximum number of times a workitem will be retried before being marked as failed -->
+  <param name="WorkItemRetryLimit" value="3"/>
+
+  <!-- The number of seconds a work item gets advantage for each priority unit -->
+  <param name="WorkItemPriorityMultiplierSecs" value="600"/>
+
+  <!-- The number of rows to purge in each delete transaction, a value of 0 means delete all at once -->
+  <param name="WorkflowLogPurgeRowLimit" value="250000"/>
+
+  <!-- The number of days to keep workflow logs before they can be deleted -->
+  <param name="WorkflowLogPurgeDaysOld" value="30"/>
+
+  <!-- The number of days to keep workflow information before they can be deleted -->
+  <param name="WorkflowPurgeDaysOld" value="60"/>
+
+  <!-- The number of days to keep cluster member records before they can be deleted. -->
+  <param name="ClusterMemberPurgeDaysOld" value="30"/>
+
+  <!-- Whether debugging messages should be turned on for workflow logging . -->
+  <param name="WorkflowLogDebug" value="true"/>
+
+  <!-- Aggregation interval in minutes for workflow timing statistics.  Mean, std dev., etc statistics for time spent executing workflow steps will be reported at this interval.  Use 0 to disable stat recording. -->
+  <param name="WorkflowStatsIntervalMins" value="60"/>
+
+  <!-- The maximum number of ProcessHistory entries to consider when producing the the Work Queue History download  -->
+  <param name="WorkQueueHistoryMaxDownload" value="10000"/>
+
+  <!-- The time between refreshes of the zone cache, in seconds -->
+  <param name="ZoneCacheRefreshIntervalSecs" value="86400"/>
+
+  <!-- The default application locale if locale can't be determined from user or browser -->
+  <param name="DefaultApplicationLocale" value="en_US"/>
+
+  <!-- The default application language if language can't be determined from user or browser -->
+  <param name="DefaultApplicationLanguage" value="en_US"/>
+
+  <!-- the default country code for the application -->
+  <param name="DefaultCountryCode" value="US"/>
+
+  <!-- Determines whether or not the phone widget will always show the region code or only shows it on demand. -->
+  <param name="AlwaysShowPhoneWidgetRegionCode" value="false"/>
+
+  <!-- The default server-wide phone country setting. Can be overridden per user -->
+  <param name="DefaultPhoneCountryCode" value="US"/>
+
+  <!-- The default country code inside NANPA region 1-->
+  <param name="DefaultNANPACountryCode" value="US"/>
+
+  <!-- This marks the beginning of a business day, inclusive -->
+  <param name="BusinessDayDemarcation" value="12:00 AM"/>
+
+  <!-- What time the business day starts at. -->
+  <param name="BusinessDayStart" value="8:00 AM"/>
+
+  <!-- What time the business day ends at. -->
+  <param name="BusinessDayEnd" value="5:00 PM"/>
+
+  <!-- The day of the week considered the end of the business week. -->
+  <param name="BusinessWeekEnd" value="Friday"/>
+
+  <!-- Whether Sunday is considered a business day. -->
+  <param name="IsSundayBusinessDay" value="false"/>
+
+  <!-- Whether Monday is considered a business day. -->
+  <param name="IsMondayBusinessDay" value="true"/>
+
+  <!-- Whether Tuesday is considered a business day. -->
+  <param name="IsTuesdayBusinessDay" value="true"/>
+
+  <!-- Whether Wednesday is considered a business day. -->
+  <param name="IsWednesdayBusinessDay" value="true"/>
+
+  <!-- Whether Thursday is considered a business day. -->
+  <param name="IsThursdayBusinessDay" value="true"/>
+
+  <!-- Whether Friday is considered a business day. -->
+  <param name="IsFridayBusinessDay" value="true"/>
+
+  <!-- Whether Saturday is considered a business day. -->
+  <param name="IsSaturdayBusinessDay" value="false"/>
+
+  <!-- A comma-delimited list of dates that should be considered holidays. -->
+  <!-- This parameter is obsolete, as holidays are now queried from the database.
+       There is an Admin UI screen which can configure these holidays.
+       However, it remains present here so that the values can be imported once
+       into the database upon upgrade to the Bedrock release. -->
+  <param name="HolidayList" value="1/1/2007, 12/25/2007"/>
+
+  <!-- Session expriration timeout, in seconds. -->
+  <param name="SessionTimeoutSecs" value="10800"/>
+
+  <!-- The minimum length of a user's password. -->
+  <param name="MinPasswordLength" value="2"/>
+
+  <!-- The maximum length of a user's password. -->
+  <param name="MaxPasswordLength" value="16"/>
+
+  <!-- Number of failed attempts that are allowed before a user is locked out, or -1 to disable the account lockout feature
+      For example, setting this to 3 means that the fourth unsuccessful try will lock the user's account -->
+  <param name="FailedAttemptsBeforeLockout" value="3"/>
+
+  <!-- Time in milliseconds before a user can retry after an unsuccessful login attempt -->
+  <param name="LoginRetryDelay" value="0"/>
+
+  <!-- Time in seconds that a user's account will stay locked for, or -1 if it must be manually unlocked -->
+  <param name="LockoutPeriod" value="-1"/>
+
+  <!-- Whether the internal scheduler is enabled. -->
+  <param name="SchedulerEnabled" value="true"/>
+
+  <!-- If UseACLPermissions is true, setting this parameter to true means that supervisors will inherit permissions on
+          a policy that have been added for a supervised user or group.-->
+  <param name="EnableDownlinePermissions" value="true"/>
+
+  <!-- Number of minutes between each memory usage monitor logging. -->
+  <param name="MemoryUsageMonitorIntervalMins" value="15"/>
+
+  <!-- The time (in number of days) before the policy expires and renewal processing should start -->
+  <param name="RenewalProcessLeadTime" value="180"/>
+
+  <!-- Location of the XSD file to be used to validate Doc Template Descriptor xml files -->
+  <param name="DocumentTemplateDescriptorXSDLocation"
+         value="document-template.xsd"/>
+
+  <!-- This flag indicates that if a Document has been rolledback, that on commit both the isDocument and addDocument should be called again -->
+  <param name="ReCallDocumentContentSourceAfterRollback" value="false"/>
+
+  <!-- Whether or not to display the UI portions of the assignment queue mechanism. Once turned on it can not be turned off again -->
+  <param name="AssignmentQueuesEnabled" value="true"/>
+  
+  <!-- The number of entries to display per page in a ListView, where not explicitly specified. -->
+  <param name="ListViewPageSizeDefault" value="15"/>
+
+  <!-- The character used as a placeholder in masked input fields -->
+  <param name="InputMaskPlaceholderCharacter" value="."/>
+
+  <!-- The maximum number of browser history items to keep.  Set this to 0 to disable to back button functionality entirely. -->
+  <param name="MaxBrowserHistoryItems" value="5"/>
+
+  <!-- The prefix to use for publicids generated by the application.  Generated publicids will be of the form prefix:id where id is
+       the actual id for the entity.  This parameter should be set to different values in production and test systems
+       to allow for the clean import/export of data between systems.  This field must be 9 characters or less in length.
+  -->
+  <param name="PublicIDPrefix" value="pc"/>
+
+  <!-- Enable internal debug tools page http://localhost:8080/app/InternalTools.do
+   NOTE Only available when server is in development mode. -->
+  <param name="EnableInternalDebugTools" value="false"/>
+
+  <!--
+    If an activity on the job is assigned to the current user, and the activity has been modified within
+    SearchActivityThresholdDays before the current date, that activity qualifies the Job as being assigned to the user.
+  -->
+  <param name="SearchActivityThresholdDays" value="366"/>
+
+  <!-- Sets the time window used to calculate user statistics. Possible values are:
+    0 (default) - Use "This Week" as the window, defined as the start of the current business week until now
+    -1 - Use "This Month", defined as the start of the current month until now
+    Any positive integer N - The window is the last N days of activity, including the current day
+  -->
+  <param name="ActivityStatisticsWindowSize" value="0"/>
+  <!-- see above -->
+  <param name="SubmissionsStatisticsWindowSize" value="0"/>
+  <!-- see above -->
+  <param name="RenewalsStatisticsWindowSize" value="0"/>
+  <!-- see above -->
+  <param name="OtherWorkOrdersStatisticsWindowSize" value="0"/>
+
+  <!-- The maximum number of rows in the Team Screen Activities/Submissions/Renewals/OtherWorkOrders tab
+       such that the tab is viewable
+       Increasing this parameter may result in team screens taking a significant time to render
+  -->
+  <param name="TeamScreenTabVisibilityRowCountCutoff" value="200"/>
+
+  <!-- For the job expiration batch process (JobExpire), the number of days past the effective / create
+       date before a job can be expired.  JobExpire will examine all jobs meeting the date criteria that
+       follows.  Only those jobs that have job.canExpireJob() true will be expired. -->
+  <param name="JobExpirationEffDateThreshold" value="7"/>
+  <!-- Note: setting create date threshold to a negative number effectively disables create
+       date checking, since no job can be created with a future create date.  EffDateThreshold
+       (above) should still be active.  -->
+  <param name="JobExpirationCreateDateThreshold" value="-1"/>
+
+  <!-- Which jobs are candidates for JobExpire, depending on the result of job.CanExpireJob()
+       PC 4.0.1 and prior only expired Submission jobs
+       Performance of queries for jobs will be improved if all applicable jobs can be expired
+       Business requirements often do not permit expiration of Audit jobs. As a result
+       canExpireJob() will need to be overridden for Audit jobs if they are to be expired. -->
+  <param name="JobExpireCheckAudit" value="false"/>
+  <!-- Set to true to enable PolicyCenter to expire this job type. -->
+  <param name="JobExpireCheckCancellation" value="false"/>
+  <!-- Set to true to enable PolicyCenter to expire this job type. -->
+  <param name="JobExpireCheckIssuance" value="false"/>
+  <!-- Set to true to enable PolicyCenter to expire this job type. -->
+  <param name="JobExpireCheckPolicyChange" value="false"/>
+  <!-- Set to true to enable PolicyCenter to expire this job type. -->
+  <param name="JobExpireCheckReinstatement" value="false"/>
+  <!-- Set to true to enable PolicyCenter to expire this job type. -->
+  <param name="JobExpireCheckRenewal" value="false"/>
+  <!-- Set to true to enable PolicyCenter to expire this job type. -->
+  <param name="JobExpireCheckRewrite" value="false"/>
+  <!-- Set to true to enable PolicyCenter to expire this job type. -->
+  <param name="JobExpireCheckSubmission" value="true"/>
+  <!-- Set to true to enable PolicyCenter to expire this job type. -->
+  <param name="JobExpireCheckTestJob" value="false"/>
+
+
+  <!-- The maximum number of quotes allowed, defaults to 3 -->
+  <param name="RenewalMaxQuotes" value="3"/>
+  <!-- The maximum number of quotes allowed, defaults to 3 -->
+  <param name="RewriteMaxQuotes" value="3"/>
+  <!-- The maximum number of quotes allowed, defaults to 3 -->
+  <param name="SubmissionMaxQuotes" value="3"/>
+  <!-- The maximum number of quotes allowed, defaults to 3 -->
+  <param name="PolicyChangeMaxQuotes" value="3"/>
+  <!-- Account gets withdrawn if the create time is older than the specified months, defaults to 37 -->
+  <param name="AccountsWithdrawnAfterMonths" value="37"/>
+
+  <!-- The maximum number of side by side quotes allowed, defaults to 4 -->
+  <param name="RenewalMaxSideBySideQuotes" value="4"/>
+  <!-- The maximum number of side by side quotes allowed, defaults to 4 -->
+  <param name="RewriteMaxSideBySideQuotes" value="4"/>
+  <!-- The maximum number of side by side quotes allowed, defaults to 4 -->
+  <param name="SubmissionMaxSideBySideQuotes" value="4"/>
+  <!-- The maximum number of side by side quotes allowed, defaults to 4 -->
+  <param name="PolicyChangeMaxSideBySideQuotes" value="4"/>
+
+  <!-- Maximum number of threads to spawn for parallel quoting -->
+  <param name="MaxParallelQuotingThreads" value="3"/>
+
+  <!-- Maximum recent Accounts in the Account tab of the UI -->
+  <param name="MaxRecentAccounts" value="5"/>
+  <!-- Maximum recent Policies/Jobs in the Policy tab of the UI -->
+  <param name="MaxRecentPoliciesAndJobs" value="5"/>
+  <!-- Maximum recent Contacts in the Contact tab of the UI -->
+  <param name="MaxRecentContacts" value="5"/>
+
+  <!-- The maximum size of the cache used to store AvailabilityContexts whenever a database lookup is executed -->
+  <param name="AvailabilityContextCacheSize" value="1000"/>
+
+  <!-- Directory used for loading and reloading product model availability. If this parameter is non-null, contains
+       at least one lookup XML file, and passes validation, then any availability data from this directory will be
+       loaded when starting the server or reloading on a running server. Otherwise availability will be loaded from
+       the standard product model directory in the config module, and the reload feature will report an error. -->
+  <param name="ExternalProductModelDirectory" value=""/>
+
+  <!-- Whether to check product model id uniqueness for all the product model objects.
+       If the parameter is set to true, an error is thrown if two product model patterns of any type share the same code identifier. 
+       If the parameter is set to false, a warning will be logged in the case where there are two Product Model patterns, both of types requiring code generation, with the same identifier. -->
+  <param name="StrictProductModelIdUniquenessChecking" value="true"/>
+  
+  <!-- Whether to use the old-style pre-update framework or only to use the new gosu class framework.
+      If true, the  PreUpdate plugin class will be called and then the validation graph will be used to determine what beans should have their pre-update rules run.
+      If false, only the PreUpdate plugin class will be invoked.
+
+      Setting this parameter to true is deprecated in PolicyCenter.-->
+  <param name="UseOldStylePreUpdate" value="false"/>
+
+  <!-- Whether to signal the database to discard existing query plans during a database stats batch process.-->
+  <param name="DiscardQueryPlansDuringStatsUpdateBatch" value="false"/>
+
+  <!--
+    Issue pl-9001 dealt with a performance penalty for locking during message send processing.   This lock also occurs
+    when the message is acted upon in the UI or in a message reply plugin..  Normally this should not be an issue and
+    the locking of primary entity first prevents deadlocks.  However, some sites consider this not worth the penalty
+    and have agree to insure that deadlocks don't occur (i.e., by either not locking message, or locking all message
+    on the primary object before locking the primary object).  If the message has no primary entity then this has
+    no effect.
+    -->
+  <param name="LockPrimaryEntityDuringMessageHandling" value="true"/>
+
+  <!-- Issue PL-28921 was attempting to optimize oracle for message queries.  But with a full time DBA there
+  maybe other means of accomplishing this -->
+  <param name="UseOracleHintsOnMessageQueries" value="true"/>
+
+  <!-- Issue ISPL-2753 - Add hint BulkInsertSelectCardinalityEstimatorHint for SqlServer, takes comma-separated list of tables -->
+  <param name="BulkInsertSelectCardinalityEstimatorHint" value="pc_pacost"/>
+
+  <!-- Lock messages during distributed message request processing -->
+  <param name="LockDuringDistributedMessageRequestHandling" value="false"/>
+
+  <!-- Controls whether PolicyCenter uses the pre-PolicyCenter 4.0 behavior for configuring data types, through the use of the fieldvalidators.xml file.
+       - Set this value to false to preserve the existing behavior. This is useful for existing installations that are upgrading but want to preserve the existing functionality.
+       - Set this value to true to implement the new behavior. This is use for new PolicyCenter installations that want to implement the new behavior.
+     Please see the Configuration Guide for more information.
+  -->
+  <param name="StrictDataTypes" value="true"/>
+
+  <!-- Default format for dates in the difference tree UI -->
+  <param name="DefaultDiffDateFormat" value="short"/>
+
+  <!-- Whether the production server retains debugging information. This parameter facilitates debugging from Studio without a type system refresh.
+        - If set to true, PolicyCenter does not clear debug information after compilation.
+        - If set to false, the server does not retain sufficient debugging information to enable debugging.
+        As a production server does not recompile types, it is not possible to regenerate any debugging information. -->
+  <param name="RetainDebugInfo" value="false"/>
+
+  <!--
+  ==============================================================================
+    Geocoding related parameters.
+  ==============================================================================
+  -->
+  <!-- By default, applications will use miles/US distances for driving distance/directions;  -->
+  <!--     if set to true, applications will use kilometers/metric distances.                 -->
+  <!-- NOTE THAT IF THIS PARAMETER DIFFERS BETWEEN ContactManager AND PolicyCenter, SOME       -->
+  <!-- DISTANCES-RELATED MESSAGES MAY BE DISPLAYED INCORRECTLY.                               -->
+  <param name="UseMetricDistancesByDefault" value="false"/>
+
+  <!-- The maximum distance allowed when performing a proximity search for the nearest-n contacts/users.      -->
+  <!--     This value is treated as miles by default, but will be treated as kilometers if the system default -->
+  <!--     unit of distance (as controlled by UseMetricDistancesByDefault) is set to true.                    -->
+  <!-- NOTE THAT IF THIS PARAMETER DIFFERS BETWEEN ContactManager AND PolicyCenter, SOME -->
+  <!--      DISTANCES-RELATED MESSAGES MAY BE DISPLAYED INCORRECTLY.                    -->
+  <!-- NOTE THAT THIS PARAMETER HAS NO EFFECT ON EITHER RADIUS ("n miles") SEARCHES OR  -->
+  <!--      "WALKING THE GROUP TREE" BASED PROXIMITY ASSIGNMENT                         -->
+  <param name="ProximitySearchOrdinalMaxDistance" value="300"/>
+
+
+  <!-- The maximum number of results to be returned by a proximity search when           -->
+  <!--     using a fixed radius (n miles/km).  This is ignored for Ordinal (nearest-n)    -->
+  <!--     searches.                                                                     -->
+  <!-- This can be overriden in the UI or APIs by setting                                -->
+  <!--     ProximitySearchParameters.RadiusSearchMaxResults                              -->
+  <param name="ProximityRadiusSearchDefaultMaxResultCount" value="1000"/>
+
+  <!-- OSGi plugins startup timeout -->
+  <param name="PluginStartupTimeout" value="60"/>
+
+  <!-- The default starting distance to use for doing proximity searches. -->
+  <param name="DefaultProximitySearchRadius" value="1"/>
+
+  <!-- The default units to use for doing proximity searches.  Allowable values are -->
+  <!-- "Mile", "Kilometer", "Foot", "Meter" -->
+  <param name="DefaultProximitySearchUnitOfDistance" value="Mile"/>
+
+  <!-- *******************************************************************************************************************-->
+  <!-- Archiving Parameters                                                                                               -->
+  <!-- *******************************************************************************************************************-->
+  <!-- Archiving Work Queues are scheduled in Scheduler-config.xml -->
+
+  <!-- Whether or not the archive feature is enabled in the system -->
+  <!-- If ArchiveEnabled was ever true, it must remain true -->
+  <param name="ArchiveEnabled" value="false"/>
+
+  <!-- Whether or not archive reference tracking is enabled. When archiving is enabled, this parameter is required to
+  be set in order to enable purging non-archive roots. -->
+  <param name="ArchiveReferenceTrackingEnabled" value="false"/>
+
+  <!-- The default encryption id to use for all exports (including archiving) -->
+  <param name="DefaultXmlExportIEncryptionId" value=""/>
+
+  <!-- Minimum number of days that must pass after a term has expired before it can be eligible for archiving. -->
+  <param name="ArchivePolicyTermDays" value="366"/>
+
+  <!-- Minimum number of days that must pass after failing a generic archiving check before a policy term is reconsidered
+        for archiving. -->
+  <param name="ArchiveDefaultRecheckDays" value="30"/>
+
+  <!-- Minimum number of days that must pass after all jobs in a term are closed before the term can be eligible for archiving. -->
+  <param name="ArchiveRecentJobCompletionDays" value="90"/>
+
+  <!-- Minimum number of days that must pass after a policy term is restored before it can be archived again. -->
+  <param name="ArchiveDaysRetrievedBeforeArchive" value="90"/>
+
+  <!-- Whether or not the archive feature is enabled in the Billing System -->
+  <!-- This parameter needs to be in sync with the configuration in the Billing System. -->
+  <param name="BillingSystemArchiveEnabled" value="false"/>
+
+  <!-- Minimum number of days after term end date before billing policy period is archived (must be <= setting in Billing System). -->
+  <!-- This parameter is used to decide whether the Billing System should be checked for the archiving flag. A negative value      -->
+  <!-- will disable this (i.e. the value will be ignored when deciding whether to call the Billing System API). Only applicable    -->
+  <!-- if the BillingSystemArchiveEnabled parameter is true. -->
+  <param name="BillingSystemArchivePolicyPeriodDays" value="-1"/>
+
+  <!-- *******************************************************************************************************************-->
+  <!-- Purging Parameters                                                                                                 -->
+  <!-- *******************************************************************************************************************-->
+  <!-- Purging Work Queues are scheduled in Scheduler-config.xml -->
+
+  <!-- If false, the destruction of personal data will be disabled. -->
+  <param name="PersonalDataDestructionEnabled" value="false"/>
+
+  <!-- Minimum number of days that must pass after the purge event has occurred for the request to be eligible for delete by CleanupPurgedRootInfo process -->
+  <param name="KeepPurgedRootsForDays" value="180"/>
+
+  <!-- Minimum number of days that must pass after ContactPurgeRequest has been purged when the request is eligible for purging. -->
+  <param name="ContactDestructionRequestAgeForPurgingResults" value="10" />
+
+  <!-- If false, the Jobs Prune/Purge process will be disabled -->
+  <param name="PruneAndPurgeJobsEnabled" value="false"/>
+
+  <!-- If false, the process that removes Orphaned Policy Periods  will be disabled -->
+  <param name="PurgeOrphanedPolicyPeriodsEnabled" value="false"/>
+
+  <!-- Minimum number of days that must pass after failing a generic purging check before a job is reconsidered for purging of its unselected policy periods. -->
+  <param name="PruneVersionsDefaultRecheckDays" value="30"/>
+
+  <!-- Minimum number of days that must pass after a job's coverage has ended before the job's unselected policy periods can be eligible for purging. -->
+  <param name="PruneVersionsPolicyTermDays" value="30"/>
+
+  <!-- If true, the PruneVersionsPolicyTermDays check will be disabled. -->
+  <param name="PruneVersionsPolicyTermDaysCheckDisabled" value="false"/>
+
+  <!-- Minimum number of days that must pass after a job is closed before the job's unselected policy periods can be eligible for purging. -->
+  <param name="PruneVersionsRecentJobCompletionDays" value="210"/>
+
+  <!-- Minimum number of days that must pass after failing a generic purging check before a job is reconsidered for purging. -->
+  <param name="PurgeJobsDefaultRecheckDays" value="30"/>
+
+  <!-- Minimum number of days that must pass after a job's coverage has ended before the job can be eligible for quote purging. -->
+  <param name="PurgeJobsPolicyTermDays" value="30"/>
+
+  <!-- If false, Purge Worksheet process is disabled -->
+  <param name="PurgeWorksheetsEnabled" value="false"/>
+
+  <!-- If false, Purge RateBookExportResult is disabled -->
+  <param name="PurgeRateBookExportResultEnabled" value="true"/>
+
+  <!-- Minimum number of days that must pass after RateBookExportResult is created to be eligible for purging. -->
+  <param name="RateBookExportResultAgeForPurging" value="60"/>
+
+  <!-- Whether rating components are loaded on system startup. Set to true to enable preloading. -->
+  <param name="RateBookPreloadEnabled" value="true"/>
+
+  <!--Minimum number of days that must pass after a job is closed before the rating worksheet container associated with its policy can be eligible for purging. -->
+  <param name="RatingWorksheetContainerAgeForPurging" value="90"/>
+
+  <!-- If true, the PurgeJobsPolicyTermDays check will be disabled. -->
+  <param name="PurgeJobsPolicyTermDaysCheckDisabled" value="false"/>
+
+  <!-- Minimum number of days that must pass after a job is closed before the job can be eligible for quote purging. -->
+  <param name="PurgeJobsRecentJobCompletionDays" value="210"/>
+
+  <!-- Old messages in the message history table are purged when they have been there for this number of days -->
+  <param name="KeepCompletedMessagesForDays" value="90"/>
+
+  <!-- Old external TransactionIds are purged when then have been there for this number of days -->
+  <param name="TransactionIdPurgeDaysOld" value="30"/>
+
+  <!-- If false, the process that removes temporary Policy Periods will be disabled. -->
+  <param name="PurgeTemporaryPolicyPeriodsEnabled" value="false"/>
+
+  <!-- Minimum number of days that must pass after a temporary policy period is created before it can be purged. -->
+  <param name="PurgeTemporaryPolicyPeriodsAfterDays" value="14"/>
+
+  <!-- Minimum number of days that must pass after the temporary entity has been created before the entity objects can be eligible for purging. -->
+  <param name="PurgeRiskAssessmentTempStoreDays" value="30"/>
+
+  <!-- **************************************************************-->
+  <!-- Mime Type Information                                         -->
+  <!-- This section tells the system how to map between mime types,  -->
+  <!-- file extensions, and icons in the UI                          -->
+  <!-- **************************************************************-->
+
+  <mimetypemapping>
+    <mimetype name="application/csv" extensions=".csv" icon="xls_mime"/>
+    <mimetype name="application/msword" extensions=".doc" icon="word_mime"/>
+    <mimetype name="application/octet-stream" extensions="" icon="document"/>
+    <mimetype name="application/pdf" extensions=".pdf" icon="pdf_mime"/>
+    <mimetype name="application/postscript" extensions=".ps" icon="pdf_mime"/>
+    <mimetype name="application/rtf" extensions=".rtf" icon="text_mime"/>
+    <mimetype name="application/vnd.ms-excel" extensions=".xls" icon="xls_mime"/>
+    <mimetype name="application/vnd.ms-powerpoint" extensions=".ppt|.pps" icon="ppt_mime"/>
+    <mimetype name="application/vnd.openxmlformats-officedocument.presentationml.presentation"
+              extensions=".pptx" icon="ppt_mime"/>
+    <mimetype name="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              extensions=".xlsx" icon="xls_mime"/>
+    <mimetype name="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              extensions=".docx" icon="word_mime"/>
+    <mimetype name="application/x-msexcel" extensions=".xls" icon="xls_mime"/>
+    <mimetype name="audio/wav" extensions=".wav" icon="sound_mime"/>
+    <mimetype name="audio/x-ms-wma" extensions=".wma" icon="sound_mime"/>
+    <mimetype name="image/bmp" extensions=".bmp" icon="image_mime"/>
+    <mimetype name="image/gif" extensions=".gif" icon="image_mime"/>
+    <mimetype name="image/jpeg" extensions=".jpg" icon="image_mime"/>
+    <mimetype name="image/pjpeg" extensions=".jpg" icon="image_mime"/>
+    <mimetype name="image/tiff" extensions=".tiff|.tif" icon="image_mime"/>
+    <mimetype name="image/vnd.ms-modi" extensions=".mdi" icon="document"/>
+    <mimetype name="image/png" extensions=".png" icon="image_mime"/>
+    <mimetype name="image/x-png" extensions=".png" icon="image_mime"/>
+    <mimetype name="text/html" extensions=".html|.htm" icon="html_mime"/>
+    <mimetype name="text/plain" extensions=".txt" icon="text_mime"/>
+    <mimetype name="text/richtext" extensions=".rtx" icon="text_mime"/>
+    <mimetype name="text/xml" extensions=".xml" icon="html_mime"/>
+    <mimetype name="video/mpeg" extensions=".mpg|.mpeg" icon="video_mime"/>
+    <mimetype name="video/quicktime" extensions=".mov" icon="video_mime"/>
+    <mimetype name="video/x-msvideo" extensions=".avi" icon="video_mime"/>
+  </mimetypemapping>
+
+  <!-- the default pdf merging is handled by a product that has a license.  This license can be server specific so
+  this line may have to be repeated for each server.  -->
+  <param name="PDFMergeHandlerLicenseKey" value=""/>
+  
+  <!--
+  ===============================================================================
+    Date Validation Parameters
+  ===============================================================================
+    -->
+
+  <!-- The latest date allowed to be used. -->
+  <param name="MaxAllowedDate" value="2200-12-31"/>
+  <!-- The earliest date allowed to be used. -->
+  <param name="MinAllowedDate" value="1800-01-01"/>
+
+  <!-- Enables/Disables support for Solr Search based capabilities, including both UI support
+       and the searching and indexing plugins.
+  -->
+  <param name="FreeTextSearchEnabled" value="false"/>
+  <!-- see above -->
+  <param name="DisableIndexFastFullScanForJobSearch" value="false"/>
+
+  <!-- (SQL Server) Whether to provide comments with contextual information in certain SQL Select statements sent to the relational database.
+       The comments are generated by instrumentation in higher level database objects created by using the query builder APIs.
+  -->
+  <param name="IdentifyQueryBuilderViaComments" value="true"/>
+  <!-- (SQL Server) Whether to provide comments with contextual information in certain SQL Select statements sent to the relational database.
+       The comments are generated by instrumentation in lower level objects, such as beans, typelists, and other database building blocks.
+  -->
+  <param name="IdentifyORMLayerViaComments" value="false"/>
+
+  <!-- Number of threads to use when running the consistency checker. -->
+  <param name="ConsistencyCheckerThreads" value="5"/>
+
+
+  <!-- ========================================= -->
+  <!--  Rate Table Management Parameters         -->
+  <!-- ========================================= -->
+
+  <!-- Rate table normalized factor row threshold:  if a rate table uses range match operations whose rows overlap,
+       normalization of the rows is attempted and the results cached for rate table look ups.  If the number of rows
+       that would be generated as a result of normalization exceed this threshold, the user is given the option
+       to store a non-normalized version of the rows to reduce memory consumption but with a trade off in lookup
+       performance -->
+  <param name="RateTableManagementNormalizationRowThreshold" value="1000"/>
+
+  <!-- Rate table normalized factor row limit:  if a rate table uses range match operations whose rows overlap,
+       normalization of the rows is attempted.  If the number of rows generated as part of normalization exceed
+       this limit, we automatically mark the table as non-normalizable and store the non-normalized version of
+       the rows. -->
+  <param name="RateTableManagementNormalizationRowLimit" value="10000"/>
+
+  <!-- Quick scan rate table row size limit:
+       When importing all the rate tables the quick scan will not import any rate tables greater than
+       the specified number of rows. -->
+  <param name="SmallRateTableRowLimit" value="10000" />
+
+  <!-- When editing a long rate routine, you can edit the rate routine by section. A long rate routine has more steps
+       than the value of the indexing threshold, theRateRoutineIndexingThreshold parameter. Default: 150 -->
+  <param name="RateRoutineIndexingThreshold" value="150"/>
+
+  <!--
+  =============================================================================
+    REST and JSON Parameters
+  =============================================================================
+  -->
+  <!--
+   Forces JSON Schema warnings of all categories to defer to the "x-gw-suppress-warnings"
+   properties of the individual JSON schemas ("default"), disabled ("off") or enabled ("on").
+  -->
+  <param name="OverrideJSONSchemaWarnings" value="default"/>
+
+  <!--
+   Forces JSON Mapping warnings of all categories to defer to the "suppress-warnings"
+   properties of the individual JSON mappings ("default"), disabled ("off") or enabled ("on").
+  -->
+  <param name="OverrideJSONMappingWarnings" value="default"/>
+
+  <!--
+   Forces REST (Swagger) Schema warnings of all categories to defer to the "x-gw-suppress-warnings"
+   properties of the individual REST schemas ("default"), disabled ("off") or enabled ("on").
+  -->
+  <param name="OverrideRESTSchemaWarnings" value="default"/>
+
+  <!--
+  If set to true, this config parameter will cause the REST servlet to preload its configuration when the servlet
+  is initialized.  Otherwise, the REST configuration will be lazily loaded on the first request to the servlet.
+  -->
+  <param name="PreloadRestServletConfig" value="false"/>
+  
+  <!--
+  ==============================================================================
+    WS-I Webservices
+  ==============================================================================
+  -->
+
+  <!-- the path to a list of WS-I webservices that are available to the WS-I webservices servlet.  This is
+   first checked against config, then against gosu type system, then against class loader, and finally
+   as a file path (or fully qualified).
+
+   If empty then it will search the typesystem for any @WsiWebService
+  -->
+  <param name="WebservicesAvailableServices" value=""/>
+
+  <!-- "true" if the WS-I service listing page is to be displayed, false otherwise.
+  -->
+  <param name="WebservicesHideListPage" value="false"/>
+
+  <!--  Whether the RequestVar objects are available from @WsiWebservice and gosu @Servlet originating threads.
+  -->
+  <param name="ScopedVariableSupportedForAllCapturedRequests" value="false"/>
+
+  <!-- RIRiskVLFinder uses a cache to map RiskNumber (string) values to RIRiskVLContainer (entity) IDs,
+       rather than issuing a database query whenever it needs one. The cache is LRU with a maximum size
+       given by the cache size below.
+  -->
+  <param name="ReinsuranceVersionListCacheSize" value="10000"/>
+
+  <!--
+  ==============================================================================
+    Business Rules Parameters
+  ==============================================================================
+  -->
+
+  <!--
+    Set to true when rules must be deployed in order to be executed. This feature is only supported in production.
+  -->
+  <param name="BizRulesDeploymentEnabled" value="false"/>
+
+  <!-- The unique identifier for deployed system. The parameter is used only when BizRulesDeploymentEnabled is true -->
+  <param name="BizRulesDeploymentId" value=""/>
+
+  <!-- "true" to import rules from config/import/bizrules location when the server was started with an empty database. Default is false. -->
+  <!-- This config parameter was added to be consistent with CC -->
+  <param name="BizRulesImportBootstrapRules" value="false"/>
+
+  <!-- "true" to enable the BizRules feature  -->
+  <param name="BizRulesEnabled" value="true"/>
+
+  <!-- a URL prefix for java documentation, used in the Help section during creation of a BizRule -->
+  <param name="OnlineJavadocPrefix" value="https://docs.oracle.com/en/java/javase/11/docs/api/"/>
+
+  <!-- Max. number of hops leaf search should search through to suggest matching results. Default is 3 -->
+  <param name="BizRulesLeafSearchNumOfHops" value="3"/>
+
+  <!-- Time (in minutes) since last write before cached items are considered stale and eligible for reaping. -->
+  <param name="BizRulesCacheStaleTimeMinutes" value="60"/>
+
+  <!-- Whether the business rules cache is initialized with the entire rule graph for all rule versions
+  that could execute in the application -->
+  <param name="PreloadBizRulesBeansCacheEnabled" value="true"/>
+
+  <!-- Whether the business rules version controller's rule head cache is populated via a single query
+  rather than waiting for it to be populated by individual queries. -->
+  <param name="BulkLoadRuleHeadByIdCacheEnabled" value="true"/>
+
+  <!--
+    ==============================================================================
+    The following config parameters are needed for Spotlight integration
+    ==============================================================================
+  -->
+  <!-- Spotlight login service URL -->
+  <param name="SpotlightLoginURL" value="http://example.com"/>
+
+  <!-- Spotlight risk assessment service URL -->
+  <param name="SpotlightRiskAssessmentServiceURL" value="http://example.com"/>
+
+  <!-- Spotlight Interactive service URL -->
+  <param name="SpotlightInteractiveServiceURL" value="http://example.com"/>
+
+  <!-- Spotlight thumbnail map service URL -->
+  <param name="SpotlightThumbnailMapURL" value="http://example.com"/>
+
+  <!-- Master switch to globally enable or disable all Spotlight features -->
+  <param name="RiskAssessmentIntegrationEnabled" value="false"/>
+
+  <!-- Determines whether the riskassessment thumbnail map will be visible on the policy location screen.
+    Note that if RiskAssessmentIntegrationEnabled is not true, then this will have no effect.
+  -->
+  <param name="RiskAssessmentThumbnailMapEnabled" value="false"/>
+
+  <!-- Determines whether single location risk assessment calls may be made to riskassessment.
+    Note that if RiskAssessmentIntegrationEnabled is not true, then this will have no effect.
+  -->
+  <param name="SingleLocationRiskAssessmentEnabled" value="false"/>
+
+  <!-- Determines whether multiple location risk assessment calls may be made to riskassessment.
+    Note that if RiskAssessmentIntegrationEnabled is not true, then this will have no effect.
+  -->
+  <param name="MultipleLocationRiskAssessmentEnabled" value="false"/>
+
+  <!-- Enables pre-loading system tables for faster server start-up. This loads all system tables rows to the memory
+  and so this may require additional heap space to handle that.
+  -->
+  <param name="PreloadSystemTableToCacheForFasterSynchronization" value="true" />
+
+  <!--
+    ==============================================================================
+    High-Volume Quoting (HVQ) Configuration: set to true for serverids or envs that
+    should act as HVQ servers (archiving cannot be enabled on those nodes)
+    ==============================================================================
+  -->
+  <param name="HVQServer" value="false"/>
+
+  <!--
+     ==============================================================================
+     High-Volume Quoting (HVQ) In Use: set to true if HVQ is enabled as part of PC
+     system installation
+     ==============================================================================
+   -->
+  <param name="HVQEnabled" value="false"/>
+
+  <!--
+    ==============================================================================
+    High-Volume Quoting (HVQ) Configuration: Max number of results returned by searching periods
+    ==============================================================================
+  -->
+  <param name="MaxHVQSearchResults" value="100"/>
+
+  <!--
+    External User Access
+    FULLYRESTRICTED – external users have access to groups and producer codes in the same organization
+    PROTECTINTERNAL – external users have "free access" to all external groups and producer codes
+    ALLOWINTERNAL – external users have "free access" to all groups and producer codes, internal and external
+  -->
+  <param name="ExternalUserAccess" value="FULLYRESTRICTED"/>
+
+  <!--
+  ==============================================================================
+  Asynchronous Quoting
+  =============================================================================
+  -->
+  <!-- Determines whether Asynchronous Quoting for large policies is enabled.
+    If AsynchronousQuotingEnabled is true, quoting for large policies runs as a background process.
+    If AsynchronousQuotingEnabled is false, then Asynchronous Quoting is disabled.
+    Default is false.
+  -->
+  <param name="AsynchronousQuotingEnabled" value="false"/>
+
+  <!-- Feature switch to enable 2-step quoting for job transactions. If true the 'Quote' button will
+    be replaced with the 'Rate' button under some circumstances depending on the configurations, which
+    are defined in PolicyLineMethods#TwoStepQuotingAvailable and JobProcess#TwoStepQuotingAvailable.
+  -->
+  <param name="TwoStepQuotingEnabled" value="true"/>
+
+  <!-- Feature switch to enable 2-step quoting for side by side job. If true the side by side quote will rate
+    the policy transaction versions instead of running a full quote to display the premium. A full quote will
+    be run when the user clicks the select version button.
+  -->
+  <param name="SideBySideTwoStepQuotingEnabled" value="true"/>
+
+  <!-- Feature switch to globally enable or disable the document production integration -->
+  <param name="DocumentProductionIntegrationEnabled" value="false"/>
+
+  <!-- How the payload is generated for asynchronous document generation, EARLY, EARLY_DEFERRED or LATE -->
+  <param name="DocumentProductionBindingType" value="EARLY"/>
+
+  <!--
+    ==============================================================================
+    Parallel Product Model Sync
+    ==============================================================================
+  -->
+  <!-- Determines whether or not parallelized product model synchronization is enabled -->
+  <param name="ParallelizedProductModelSyncEnabled" value="false"/>
+
+  <!-- Thread pool size for parallelized product model synchronization. The optimum number of threads greatly depends
+    on your system and its configuration but a recommended initial value is the number of available processors in your
+    environment. To better determine the optimum number of threads it is recommended that performance benchmark
+    testing be performed.
+   -->
+  <param name="MaxProductModelSyncThreadPoolSize" value="4"/>
+
+  <!-- The minimum number of coverables on a policy period required to take advantage of parallelized product model
+    synchronization if enabled. This parameter is utilized in the shouldParallelizeProductModelAvailabilitySync()
+    method of the policy period enhancement (PolicyPeriodBaseEnhancement.gsx). The parameter value
+    may not be taken into consideration if the enhancement has been altered or a different implementation is used.
+   -->
+  <param name="MinNumberOfCoverablesToParallelizeProductModelSync" value="25"/>
+
+  <!--
+  Number of milliseconds per coverable to wait for parallel product model sync.
+  For example: when quoting a policy with 10 coverables and using the default timeout of 2500ms per coverable, the
+  server will time out the product model sync operation 25 seconds after it starts and display an error to the user.
+  Disabling this timeout is not recommended as users may get stuck until the session times out.
+  A value of -1 implies no timeout and the queue will wait until product model sync completes or the session times out.
+  -->
+  <param name="ParallelProductModelSyncTimeoutPerCoverable" value="2500"/>
+
+
+  <!--
+    Enable/Disable an external Configuration Service as a source for some of application configuration.
+    If enabled the application will load and manage configuration through a Configuration Service.
+    When disabled existing local configuration is used.
+  -->
+  <param name="ConfigurationServiceEnabled" value="false"/>
+
+  <!--
+  The maximum allowable XML export size (in megabytes) which may be loaded into memory.
+  Any attempt to export via admin API larger amount of data than this will fail.
+  This parameter protects the server from possible memory consumption problems.
+  -->
+  <param name="MaximumXmlExportSize" value="300"/>
+
+  <!--
+    Controls how stringent the phone number validator is. With strict validation turned
+    off (false, the default), very little validation is performed.
+    With strict validation turned on (true) phone numbers are validated for syntax and
+    correctness. So, for example, numbers with unregistered prefixes are rejected.
+  -->
+  <param name="PhoneNumberStrictValidation" value="false"/>
+
+
+  <!--
+    Enable or disable parallel rating. Default is true.
+    If ParallelizedRatingEnabled is false, rating parallelization is disabled.
+    If ParallelizedRatingEnabled is true, rating parallelization is enabled and each line of business
+    which supports rating parallelization must also override PolicyLine#shouldParallelizeRating method. In the base
+    configuration, only CPLine enables rating parallelization.
+  -->
+  <param name="ParallelizedRatingEnabled" value="true"/>
+
+  <!-- Maximum number of threads spawned during rating parallelization. The optimum number of threads greatly depends
+    on your system and its configuration but a recommended initial value is the number of available processors in your
+    environment. To better determine the optimum number of threads it is recommended that performance benchmark
+    testing be performed. -->
+  <param name="MaxRatingThreadPoolSize" value="4"/>
+
+  <!--
+  Number of milliseconds per coverable to wait for parallel rating.
+  For example: when quoting a policy with 10 coverables and using the default timeout of 20 second per coverable, the
+  server will time out the parallel rating 200 seconds after it starts and display an error to the user.
+  Disabling this timeout is not recommended as users may get stuck until the session times out.
+  A value of -1 implies no timeout and the queue will wait until rating completes or the session times out.
+  -->
+  <param name="ParallelRatingTimeoutPerCoverable" value="20000"/>
+
+  <!-- Whether the cache that holds jurisdictions and reference dates for coverables should be enabled. -->
+  <param name="CoverableCacheEnabled" value="false"/>
+
+
+  <!--  If true, Offering availability will be based on PolicyPeriod reference date, otherwise based on current system date -->
+  <param name="UsePolicyPeriodReferenceDateForOfferingAvailability" value="false"/>
+
+  <!-- LookupTableManager uses a cache to improve performance of Product Model availability lookups. Specific cache
+    entries are expired after a period of inactivity, specified using this parameter (expressed in minutes).
+    If a cache entry hasn't been accessed in the last X minutes, it will be expired from the cache
+    so the beans and bundle can be garbage-collected by the VM.
+
+    The default value is 1440 minutes (e.g., 24 hours). If reducing this expiry time, please consider
+    performance implications as cache misses may result if entries have been flushed.
+  -->
+  <param name="AvailabilityContextCacheEntryExpirationTime" value="1440"/>
+
+  <!-- Controls the concurrency level of the Product Model Class Cache. This cache is lazy-loaded when Product Model
+    pattern objects are instantiated (e.g., coverage patterns). Please
+    see documentation for com.google.common.cache.CacheBuilder#concurrencyLevel for details.
+  -->
+  <param name="ProductModelClassCacheConcurrencyLevel" value="10"/>
+  
+  <!-- Minimum number of days that must pass after the activity has been canceled before it can be retired. -->
+  <param name="CanceledActivityRetentionWindow" value="30"/>
+
+  <!-- Whether or not to enable DTO Based rating for Commercial Property LOB (including sample data such as ratebooks, calc routines, param sets, and tables). 
+  This is for DEMO purposes only.  If you change this during runtime you'll have to clear and reload sample data to load the correct rate books. 
+  Defaults to false. -->
+  <param name="EnableCPDTOParallelRating" value="false"/>
+
+  <!-- Whether to display the CustomBilling checkbox on the job wizard Payment screens. Using InvoiceStream overrides
+    has superseded CustomBilling as the preferred way to specify InvoiceStream preferences so the CustomBilling
+    checkbox is hidden in the reference implementation.
+   
+    In BillingCenter, using CustomBilling requires implementation beyond what is available in the reference
+    implementation. Refer to KB 000006544 "BC8 Config Series: Policy Level Cash Separation and Custom Billing" for
+    information on implementing CustomBilling in BillingCenter. -->
+  <param name="EnableCustomBilling" value="false"/>
+
+  <!-- Whether to allow the server to start in development mode when there are domain graph validation errors.
+  
+   This option is only provided to temporarily allow development to proceed with domain graph validation
+   errors. All domain graph validation errors *must* be resolved before the system can run in production.
+   
+   This parameter is ignored on instances that are running in production mode (that is,
+   the domain graphs must always be valid on production systems).-->
+  <param name="AllowStartupInDevelopmentModeWithDomainGraphErrors" value="false"/>
+
+  <!-- Whether to read precompiled rate routines from jar file. -->
+  <param name="EnableRateRoutinesJar" value="false"/>
+
+  <!-- Path to the rate routines jar. May be absolute or relative to the web app root. -->
+  <param name="RateRoutinesJarFile" value=""/>
+
+  <!-- Path to the rate routines jar to update on rate book changes. If set to a non-empty string, we update this file,
+  rather than the one specified by RateRoutinesJarFile.
+  Intended for use on Windows because RateRoutinesJarFile cannot be modified at runtime.
+  -->
+  <param name="RateRoutinesUpdateJarFile" value=""/>
+  
+  <!-- Whether UI labels for overridden arguments of rate tables are simple (ellipses) or not. -->
+  <param name="OverriddenTableArgsLabelSimple" value="false"/>
+  <param name="EnableRatingModule" value="2810"/>
+</config>

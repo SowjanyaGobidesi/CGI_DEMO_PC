@@ -1,0 +1,26 @@
+{
+  "schemaName": "taptodrive.pc.taptodrivepolicydriverrequest-1.0",
+  "mappers": {
+    "Tap2DrivePolicyDriverRequest": {
+      "schemaDefinition": "Tap2DrivePolicyDriverRequest",
+      "root": "entity.PolicyDriver",
+      "properties": {
+        "driverId": {
+          "path": "PolicyDriver.Tap2DriveRecord_Ext.UniqueDriverID"
+        },
+        "firstName": {
+          "path": "PolicyDriver.FirstName"
+        },
+        "lastName": {
+          "path": "PolicyDriver.LastName"
+        },
+        "emailId": {
+          "path": "((PolicyDriver as PolicyContactRole).AccountContactRole.AccountContact.Contact as Person).EmailAddress1"
+        },
+        "phone": {
+          "path": "((PolicyDriver as PolicyContactRole).AccountContactRole.AccountContact.Contact as Person).PrimaryPhoneValue"
+        }
+      }
+    }
+  }
+}

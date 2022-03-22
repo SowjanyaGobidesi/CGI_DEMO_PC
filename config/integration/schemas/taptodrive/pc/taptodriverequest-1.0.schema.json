@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "Tap2DrivePolicyRequest": {
+      "type": "object",
+      "properties": {
+        "driverId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "policyNumber": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
