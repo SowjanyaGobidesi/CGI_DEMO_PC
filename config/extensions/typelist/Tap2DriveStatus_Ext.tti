@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<typelist xmlns="http://guidewire.com/typelists" name="Tap2DriveStatus_Ext" desc="Tap2DriveStatus">
+  <typecode
+    code="Enrolled"
+    desc="Enrolled"
+    name="Enrolled"/>
+  <typecode
+    code="PreEnrolled"
+    desc="Enrolled"
+    name="PreEnrolled"/>
+  <typecode
+    code="PendingEnrollment"
+    desc="Pending Enrollment"
+    name="Pending Enrollment"/>
+  <typecode
+    code="RequestForEnrollment"
+    desc="Request For Enrollment"
+    name="Request For Enrollment"/>
+  <typecode
+    code="DoNotEnroll"
+    desc="Do not Enroll"
+    name="Do not Enroll"/>
+  <typecode
+    code="UnEnrolled"
+    desc="UnEnrolled"
+    name="UnEnrolled"/>
+  <typecode
+    code="ReportReceived"
+    desc="Report Received"
+    name="Report Received"/>
+  <typecode
+    code="ReportUnavailable"
+    desc="Report Unavailable"
+    name="Report Unavailable"/>
+</typelist>

@@ -1,0 +1,19 @@
+package rules.EventMessage.EventFired_dir.EFR12000Tap2Drive_EXT_dir
+
+uses com.tap2drive.constants.Tap2DriveConstants
+uses com.tap2drive.rulehelper.Tap2DriveRuleHelper
+
+@gw.rules.RuleName("EFR12200RetrieveRecords")
+internal class EFR12200RetrieveRecords {
+  static function doCondition(messageContext : entity.MessageContext) : boolean {
+/*start00rule*/
+    return messageContext.EventName == Tap2DriveConstants.TAP2DRIVE_SCORES_EVENT
+/*end00rule*/
+}
+
+  static function doAction(messageContext : entity.MessageContext, actions : gw.rules.Action) {
+/*start00rule*/
+    Tap2DriveRuleHelper.fetchDriverScores(messageContext, actions)
+/*end00rule*/
+  }
+}

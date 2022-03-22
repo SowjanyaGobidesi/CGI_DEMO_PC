@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<plugin
+  interface="MessageTransport"
+  name="Tap2DriveTransportPlugin">
+  <plugin-gosu
+    gosuclass="com.plugin.impl.Tap2DriveTransportPlugin"/>
+</plugin>

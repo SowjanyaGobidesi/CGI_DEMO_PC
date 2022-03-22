@@ -1,0 +1,13 @@
+#apis:                                     # this list of apis to publish
+# - name: gw.pl.system.cluster_tools-1.0   # the yaml file of an api to published - required
+# env: dev                                 # the environment that this yaml file will be published - optional
+# template: dev-1.0                        # the template to use as a template for this api - optional and should almost always be left to the default
+#defaultTemplate:                          # default template for these published APIs
+# - name: gw.pl.framework.dev_template-1.0 # a yaml file with some standard declarations
+# env: dev,test                            # the environments that these APIs will be published - optional
+apis:
+- name: gw.pl.framework.api_list-1.0
+- name: gw.pl.system.server_tools-1.0
+- name: taptodrive.pc.taptodrive-1.0
+defaultTemplate:
+- name: gw.pl.framework.dev_template-1.0

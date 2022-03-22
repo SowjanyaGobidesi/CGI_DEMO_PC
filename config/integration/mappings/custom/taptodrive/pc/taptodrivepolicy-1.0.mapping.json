@@ -1,0 +1,14 @@
+{
+  "schemaName": "taptodrive.pc.taptodrivepolicyrequest-1.0",
+  "mappers": {
+    "Tap2DrivePolicyRequest": {
+      "schemaDefinition": "Tap2DrivePolicyRequest",
+      "root": "entity.PolicyDriver",
+      "properties": {
+        "policyNumber": {
+          "path": "PolicyDriver.Tap2DriveRecord_Ext.toString ()"
+        }
+      }
+    }
+  }
+}

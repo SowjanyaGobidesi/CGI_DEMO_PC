@@ -1,0 +1,31 @@
+swagger: '2.0'
+info:
+  title: "Tap2DriveAPI"
+  version: '1.0'
+  description: "API to work on Tap2Drive functionalities"
+basePath: /apis/taptodrive
+x-gw-runlevel: maintenance
+x-gw-schema-import:
+  request: taptodrive.pc.taptodriverequest-1.0
+  response: taptodrive.pc.taptodriveresponse-1.0
+x-gw-apihandlers:
+  - com.tap2drive.utils.Tap2DriveAPIHelper
+paths:
+  /taptodriverecord:
+    put:
+      summary: "Update Tap2Drive Record enrollment status"
+      operationId: updateEnrollmentStatus
+      consumes:
+        - 'application/json'
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "request#/definitions/TapToDriveRequest"
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: "Successful operation"
+          schema:
+            $ref: "request#/definitions/TapToDriveResponse"
