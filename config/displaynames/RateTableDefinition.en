@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Entity
+  name="RateTableDefinition">
+  <Columns>
+    <Column
+      beanPath="RateTableDefinition.TableCode"
+      name="Code"/>
+    <Column
+      beanPath="RateTableDefinition.PolicyLine"
+      name="PolicyLine"/>
+  </Columns>
+  <DisplayName><![CDATA[gw.api.locale.DisplayKey.get("Web.Rating.RateTableDefinition.EntityName", Code, PolicyLine)]]></DisplayName>
+  <DisplayName type="RateBookExport">"Rate table ${Code}"</DisplayName>
+</Entity>

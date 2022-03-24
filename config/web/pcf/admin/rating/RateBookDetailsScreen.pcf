@@ -1,0 +1,471 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="rateBook.isDraft()"
+    id="RateBookDetailsScreen">
+    <Require
+      name="rateBook"
+      type="RateBook"/>
+    <Require
+      name="displayImportResults"
+      type="boolean"/>
+    <Require
+      name="warnings"
+      type="List&lt;String&gt;"/>
+    <Variable
+      initialValue="new gw.pcf.rating.ratebook.RateBookDetailsScreenUIHelper (rateBook)"
+      name="rateBookDetailsScreenUIHelper"
+      type="gw.pcf.rating.ratebook.RateBookDetailsScreenUIHelper"/>
+    <Variable
+      initialValue="gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.TableCard"
+      name="currentCard"
+      type="gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType"/>
+    <Variable
+      initialValue="new gw.rating.rtm.RateBookUIValidator()"
+      name="rateBookUIValidator"
+      type="gw.rating.rtm.RateBookUIValidator"/>
+    <Variable
+      initialValue="new ratingtool.RateBookUIHelper(rateBook)"
+      name="rateBookUIHelper"
+      type="ratingtool.RateBookUIHelper"/>
+    <Toolbar
+      id="RatebookDetailToolbar">
+      <ToolbarButton
+        action="EditRateBook.go(rateBook, currentCard)"
+        id="EditButton"
+        label="DisplayKey.get(&quot;Web.Rating.RateBooks.EditButton&quot;)"
+        visible="rateBook.isDraft() and perm.System.ratebookedit"/>
+      <ToolbarButton
+        action="rateBookDetailsScreenUIHelper.removeCurrentBook()"
+        confirmMessage="DisplayKey.get(&quot;Web.Rating.RateBooks.DeleteConfirmation&quot;)"
+        id="DeleteButton"
+        label="DisplayKey.get(&quot;Web.Rating.RateBooks.DeleteButton&quot;)"
+        visible="rateBook.isDraft() and perm.System.ratebookedit"/>
+      <ToolbarButton
+        action="rateBookDetailsScreenUIHelper.processInTx(\ rb -&gt; rb.stage(rateBookUIValidator))"
+        id="SubmitForApprovalButton"
+        label="DisplayKey.get(&quot;Web.Rating.RateBooks.PromoteToStageButton&quot;)"
+        visible="rateBook.isDraft() and (not rateBook.Empty) and perm.System.ratebookedit"/>
+      <ToolbarButton
+        action="rateBookDetailsScreenUIHelper.processInTx(\ rb -&gt; rb.approve(rateBookUIValidator))"
+        id="ApproveButton"
+        label="DisplayKey.get(&quot;Web.Rating.RateBooks.ApproveButton&quot;)"
+        visible="(rateBook.isStage()) and (not rateBook.Empty) and perm.System.ratebookapprove"/>
+      <ToolbarButton
+        action="rateBookDetailsScreenUIHelper.processInTx(\ rb -&gt; rb.returnToDraft())"
+        id="ReturnToDraftButton"
+        label="DisplayKey.get(&quot;Web.Rating.RateBooks.ReturnToDraftButton&quot;)"
+        visible="(rateBook.isStage() or rateBook.isApproved()) and perm.System.ratebookedit"/>
+      <ToolbarButton
+        action="rateBookDetailsScreenUIHelper.processInTx(\ rb -&gt; rb.activate(rateBookUIValidator))"
+        confirmMessage="DisplayKey.get(&quot;Web.Rating.RateBooks.MoveToProductionConfirmation&quot;)"
+        id="MoveToProductionButton"
+        label="DisplayKey.get(&quot;Web.Rating.RateBooks.MoveToProductionButton&quot;)"
+        visible="rateBook.isApproved() and (not rateBook.Empty) and perm.System.ratebookapprove"/>
+      <ToolbarButton
+        action="VersionRateBook.go(rateBook)"
+        id="VersionRateBookButton"
+        label="DisplayKey.get(&quot;Web.Rating.RateBooks.NewEdition&quot;)"
+        shortcut="C"
+        visible="rateBook.isActive() and (not rateBook.Empty) and perm.System.ratebookedit"/>
+    </Toolbar>
+    <AlertBar
+      id="ImportSuccessfulMessage"
+      label="DisplayKey.get(&quot;Web.Rating.RateBooks.SuccessfullyImported&quot;)"
+      showConfirmMessage="false"
+      visible="displayImportResults"/>
+    <AlertBar
+      id="RateBookWarningsMessage"
+      label="rateBookDetailsScreenUIHelper.getWarningMessages(warnings)"
+      showConfirmMessage="false"
+      visible="displayImportResults and warnings.Count &gt; 0"/>
+    <PanelRef>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef>
+            <DetailViewPanel
+              editable="false"
+              id="RateBookDV">
+              <Variable
+                initialValue="new gw.pcf.rating.ratebook.RateBookDVUIHelper (rateBook)"
+                name="rateBookDVUI"
+                type="gw.pcf.rating.ratebook.RateBookDVUIHelper"/>
+              <Variable
+                initialValue="rateBookDVUI.AreRateTablesReferenced ? DisplayKey.get(&quot;Web.Rating.RateBooks.ContainsReferences&quot;) : DisplayKey.get(&quot;Web.Rating.RateBooks.SelfContained&quot;)"
+                name="storageDetails"
+                recalculateOnRefresh="true"
+                type="java.lang.String"/>
+              <Variable
+                initialValue="new gw.rating.rtm.RateBookBatchExport()"
+                name="exporter"
+                type="gw.rating.rtm.RateBookBatchExport"/>
+              <Variable
+                initialValue="(rateBook.ExcelExportResultFromDB != null) ? rateBook.ExcelExportResultFromDB.CompletionPercentage != 100 : false"
+                name="excelExportInProgress"
+                recalculateOnRefresh="true"
+                type="boolean"/>
+              <Variable
+                initialValue="(rateBook.XMLExportResultFromDB != null) ? rateBook.XMLExportResultFromDB.CompletionPercentage != 100 : false"
+                name="xmlExportInProgress"
+                recalculateOnRefresh="true"
+                type="boolean"/>
+              <Variable
+                initialValue="excelExportInProgress ? RateBookExportType.TC_EXCEL : (xmlExportInProgress ? RateBookExportType.TC_XML : null)"
+                name="exportType"
+                recalculateOnRefresh="true"
+                type="RateBookExportType"/>
+              <InputColumn
+                refreshOnProgressComplete="true">
+                <ButtonInput
+                  align="left"
+                  available="not rateBook.ExportLock"
+                  id="ExportButton"
+                  labelAbove="true"
+                  value="DisplayKey.get(&quot;Web.Rating.RateBooks.Export&quot;)"
+                  visible="not (excelExportInProgress and xmlExportInProgress)">
+                  <MenuItem
+                    action="exportType = RateBookExportType.TC_EXCEL; excelExportInProgress = true; exporter.start(rateBook, RateBookExportType.TC_EXCEL)"
+                    id="ExportToSpreadsheetItem"
+                    label="DisplayKey.get(&quot;Web.Rating.RateBooks.ExportToSpreadsheet&quot;)"/>
+                  <MenuItem
+                    action="exportType = RateBookExportType.TC_XML; xmlExportInProgress = true;  exporter.start(rateBook, RateBookExportType.TC_XML)"
+                    available="!rateBook.isDraft()"
+                    id="ExportToXMLItem"
+                    label="DisplayKey.get(&quot;Web.Rating.RateBooks.ExportToXML&quot;)"/>
+                </ButtonInput>
+                <ProgressInput
+                  id="ExportProgressBar"
+                  labelAbove="true"
+                  percentage="rateBookDetailsScreenUIHelper.progressBarPercentage(exportType)"
+                  status="rateBookDetailsScreenUIHelper.progressBarStatus(exportType)"
+                  visible="excelExportInProgress or xmlExportInProgress"/>
+                <DateInput
+                  dateFormat="short"
+                  id="ExcelExportResultDateTimeStamp"
+                  label="rateBookDetailsScreenUIHelper.getExportResultDateTimeStampLabel(RateBookExportType.TC_EXCEL)"
+                  timeFormat="long"
+                  value="rateBook.ExcelExportResultFromDB.UpdateTime"
+                  visible="rateBookDetailsScreenUIHelper.isExportCompleted(RateBookExportType.TC_EXCEL)"/>
+                <DateInput
+                  dateFormat="short"
+                  id="XMLExportResultDateTimeStamp"
+                  label="rateBookDetailsScreenUIHelper.getExportResultDateTimeStampLabel(RateBookExportType.TC_XML)"
+                  timeFormat="long"
+                  value="rateBook.XMLExportResultFromDB.UpdateTime"
+                  visible="rateBookDetailsScreenUIHelper.isExportCompleted(RateBookExportType.TC_XML)"/>
+                <ButtonInput
+                  align="left"
+                  id="DownloadButton"
+                  labelAbove="true"
+                  value="DisplayKey.get(&quot;Web.Rating.RateBooks.Download&quot;)"
+                  visible="rateBook.ExcelExportResultFromDB != null or rateBook.XMLExportResultFromDB != null">
+                  <MenuItem
+                    action="exporter.downloadFile(rateBook.ExcelExportResultFromDB)"
+                    download="true"
+                    id="DownloadSpreadsheetItem"
+                    label="DisplayKey.get(&quot;Web.Rating.RateBooks.DownloadSpreadsheet&quot;)"
+                    visible="rateBookDetailsScreenUIHelper.isExportCompleted(RateBookExportType.TC_EXCEL) &amp;&amp; !rateBookDetailsScreenUIHelper.isExportFailed(RateBookExportType.TC_EXCEL)"/>
+                  <MenuItem
+                    action="exporter.downloadFile(rateBook.XMLExportResultFromDB)"
+                    download="true"
+                    id="DownloadXMLItem"
+                    label="DisplayKey.get(&quot;Web.Rating.RateBooks.DownloadXML&quot;)"
+                    visible="rateBookDetailsScreenUIHelper.isExportCompleted(RateBookExportType.TC_XML) &amp;&amp; !rateBookDetailsScreenUIHelper.isExportFailed(RateBookExportType.TC_XML)"/>
+                </ButtonInput>
+                <InputDivider/>
+                <Label
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.DetailRateBookTitle&quot;)"/>
+                <TextInput
+                  editable="true"
+                  id="Code"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.Code&quot;)"
+                  required="true"
+                  value="rateBook.BookCode"/>
+                <TextInput
+                  editable="true"
+                  id="Name"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.Name&quot;)"
+                  required="true"
+                  value="rateBook.BookName"
+                  visible="CurrentLocation.InEditMode"/>
+                <TextInput
+                  editable="true"
+                  id="Edition"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.Edition&quot;)"
+                  required="true"
+                  value="rateBook.BookEdition"/>
+                <TextInput
+                  editable="true"
+                  id="Description"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.Description&quot;)"
+                  value="rateBook.BookDesc"/>
+                <TypeKeyInput
+                  id="Status"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.Status&quot;)"
+                  value="rateBook.Status"
+                  valueType="typekey.RateBookStatus"/>
+                <CheckBoxInput
+                  editable="true"
+                  id="CascadedLookup"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.CascadedLookup&quot;)"
+                  required="false"
+                  value="rateBook.CascadedLookup"/>
+                <TextInput
+                  editable="true"
+                  id="Group"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.BookGroup&quot;)"
+                  required="false"
+                  value="rateBook.BookGroup"/>
+                <DateInput
+                  dateFormat="short"
+                  id="ActivationDate"
+                  label="rateBookDVUI.StatusChangeDateLabel"
+                  timeFormat="long"
+                  value="rateBook.LastStatusChangeDate"/>
+                <AltUserInput
+                  action="UserDetailPage.go(rateBook.UpdateUser)"
+                  actionAvailable="rateBook.UpdateUser != null"
+                  id="LastUpdatedBy"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.LastUpdatedBy&quot;)"
+                  value="rateBook.UpdateUser"/>
+                <DateInput
+                  dateFormat="short"
+                  id="LastUpdateTime"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.LastUpdateTime&quot;)"
+                  timeFormat="long"
+                  value="rateBook.UpdateTime">
+                  <PostOnChange/>
+                </DateInput>
+                <ContentInput
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.Storage&quot;)">
+                  <Link
+                    id="StorageLabel"
+                    label="storageDetails"/>
+                  <Link
+                    action="rateBookDVUI.makeRateTablesOwned()"
+                    confirmMessage="DisplayKey.get(&quot;Web.Rating.RateBooks.SelfContainedConfirmMessage&quot;)"
+                    icon="&quot;rate_book&quot;"
+                    iconType="svgFileName"
+                    id="StorageIcon"
+                    tooltip="DisplayKey.get(&quot;Web.Rating.RateBooks.StorageIconToolTip&quot;)"
+                    visible="rateBookDVUI.displayMakeOwnedIcon()"/>
+                </ContentInput>
+              </InputColumn>
+              <InputColumn>
+                <Label
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.PolicyCriteriaTitle&quot;)"/>
+                <RangeInput
+                  editable="rateBook.RateTables.IsEmpty"
+                  id="PolicyLine"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.PolicyLine&quot;)"
+                  optionLabel="gw.rating.GenericRateBookFieldEnhancement.policyLineCodeToDescription(VALUE)"
+                  required="true"
+                  value="rateBookDVUI.PolicyLineWrapper"
+                  valueRange="gw.rating.rtm.util.ProductModelUtils.getAllPolicyLinesForSearch()"
+                  valueType="java.lang.String">
+                  <PostOnChange/>
+                </RangeInput>
+                <RangeInput
+                  editable="true"
+                  id="Jurisdiction"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.Jurisdiction&quot;)"
+                  optionLabel="VALUE.First ?: DisplayKey.get(&quot;Web.Rating.Filter.Generic&quot;)"
+                  required="true"
+                  value="rateBookDVUI.BookJurisdictionWrapper"
+                  valueRange="gw.rating.rtm.util.ProductModelUtils.getAllJurisdictionsForSearch()"
+                  valueType="gw.util.Pair&lt;java.lang.String, typekey.Jurisdiction&gt;"/>
+                <RangeInput
+                  editable="true"
+                  id="UWCompany"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.UWCompany&quot;)"
+                  optionLabel="VALUE.First ?: DisplayKey.get(&quot;Web.Rating.Filter.Generic&quot;)"
+                  required="true"
+                  value="rateBookDVUI.UWCompanyWrapper"
+                  valueRange="gw.rating.rtm.util.ProductModelUtils.getAllUWCompaniesForSearch()"
+                  valueType="gw.util.Pair&lt;java.lang.String, entity.UWCompany&gt;"/>
+                <RangeInput
+                  editable="true"
+                  id="Offering"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.Offering&quot;)"
+                  optionLabel="gw.rating.GenericRateBookFieldEnhancement.offeringCodeToDescription(VALUE)"
+                  required="true"
+                  sortValueRange="false"
+                  value="rateBookDVUI.BookOfferingWrapper"
+                  valueRange="gw.rating.rtm.util.ProductModelUtils.getAllDisplayOfferingsFor(rateBook.PolicyLine)"
+                  valueType="java.lang.String"/>
+                <InputDivider/>
+                <TextInput
+                  id="EffectiveDateLabel"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.EffectiveDate&quot;)"
+                  value="&quot;&quot;"/>
+                <DateInput
+                  editable="true"
+                  id="EffectiveDate"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.EffectiveDate.After&quot;)"
+                  required="true"
+                  validationExpression="rateBookDVUI.checkDateIsEarlierThanBefore(rateBookDVUI.RateBook.EffectiveDate)"
+                  value="rateBookDVUI.RateBook.EffectiveDate">
+                  <PostOnChange
+                    onChange="rateBookDVUI.possiblyAutoPopulateRenewalEffectiveDate()"/>
+                </DateInput>
+                <DateInput
+                  editable="true"
+                  id="ExpirationDate"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.RenewalEffectiveDate.Before&quot;)"
+                  validationExpression="rateBookDVUI.checkBeforeOccursLaterThanPolicyEffectiveDateOrRenewalEffectiveDate()"
+                  value="rateBookDVUI.RateBook.ExpirationDate">
+                  <PostOnChange/>
+                </DateInput>
+                <InputDivider/>
+                <TextInput
+                  id="RenewalEffectiveDateLabel"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.RenewalEffectiveDate&quot;)"
+                  value="&quot;&quot;"/>
+                <DateInput
+                  editable="true"
+                  id="RenewalEffectiveDate"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.RenewalEffectiveDate.After&quot;)"
+                  required="true"
+                  validationExpression="rateBookDVUI.checkDateIsEarlierThanBefore(rateBookDVUI.RateBook.RenewalEffectiveDate)"
+                  value="rateBookDVUI.RateBook.RenewalEffectiveDate"/>
+                <DateInput
+                  available="false"
+                  editable="true"
+                  helpText="DisplayKey.get(&quot;Web.Rating.RateBooks.RenewalEffectiveDate.BeforeHelp&quot;)"
+                  id="RenewalExpirationDate"
+                  label="DisplayKey.get(&quot;Web.Rating.RateBooks.RenewalEffectiveDate.Before&quot;)"
+                  value="rateBook.ExpirationDate"/>
+              </InputColumn>
+            </DetailViewPanel>
+          </PanelRef>
+        </PanelColumn>
+        <PanelColumn>
+          <PanelRef
+            def="LocalizedValuesDV(rateBook, { &quot;BookName&quot;, &quot;BookDesc&quot;}, { DisplayKey.get(&quot;Web.Rating.RateBooks.L10nDV.Name&quot;), DisplayKey.get(&quot;Web.Rating.RateBooks.L10nDV.Description&quot;) })"
+            editable="rateBook.Status == RateBookStatus.TC_DRAFT"/>
+        </PanelColumn>
+      </PanelRow>
+    </PanelRef>
+    <CardViewPanel>
+      <Variable
+        initialValue="rateBookUIHelper.IncludedRateRoutines"
+        name="includedRateRoutines"
+        type="CalcRoutineDefinition[]"/>
+      <Variable
+        initialValue="rateBookUIHelper.IncludedRateTables"
+        name="includedRateTables"
+        type="RateTable[]"/>
+      <Card
+        id="IncludedRateTablesCard"
+        onSelect="currentCard = gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.TableCard"
+        selectOnEnter="currentCard == gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.TableCard"
+        title="DisplayKey.get(&quot;Web.Rating.RateBooks.SelectedRateTablesTitle&quot;)">
+        <PanelRef
+          id="IncludedRateTablesPanel">
+          <Toolbar>
+            <SearchItem
+              id="rateTableSearch"
+              label="&quot;Search Rate Tables&quot;"
+              onFailure="CurrentLocation"
+              onResult="includedRateTables = rateBookUIHelper.setResultRateTable(result as RateTable[])"
+              search="rateBookUIHelper.filterRateTable(searchText)"
+              validationError="null"/>
+          </Toolbar>
+          <ListViewPanel
+            id="IncludedRateTablesLV">
+            <RowIterator
+              editable="false"
+              elementName="includedRateTable"
+              id="IncludedRateTablesList"
+              value="includedRateTables //rateBook != null ? rateBook.SelectedRateTables.orderBy(\ rt -&gt; rt.Definition.TableName).toTypedArray() : new RateTable[] {}"
+              valueType="entity.RateTable[]">
+              <Row>
+                <TextCell
+                  action="RateTableFactorList.go(gw.rating.rtm.domain.RateTableFactorListController.createDatabaseBasedController(), includedRateTable, rateBook)"
+                  id="Name"
+                  label="DisplayKey.get(&quot;Web.Rating.RateTables.Name&quot;)"
+                  value="includedRateTable.Definition.TableName"/>
+                <TextCell
+                  id="Code"
+                  label="DisplayKey.get(&quot;Web.Rating.RateTables.Code&quot;)"
+                  value="includedRateTable.Definition.TableCode"/>
+                <TextCell
+                  id="Description"
+                  label="DisplayKey.get(&quot;Web.Rating.RateTables.Description&quot;)"
+                  value="includedRateTable.Definition.TableDesc"/>
+                <TextCell
+                  align="center"
+                  id="Usage"
+                  label="DisplayKey.get(&quot;Web.Rating.RateTables.Usage&quot;)"
+                  value="gw.rating.rtm.util.RatingUIUtil.getOwnershipLabel(includedRateTable)"/>
+                <ModalCellRef
+                  def="RateTableStrategyCell(includedRateTable)"
+                  id="Strategy"
+                  label="DisplayKey.get(&quot;Web.Rating.RateTables.Strategy&quot;)"
+                  mode="includedRateTable.Owned ? &quot;owning&quot; : &quot;default&quot;"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </Card>
+      <Card
+        id="IncludedRateRoutines"
+        onSelect="currentCard = gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.RoutineCard"
+        selectOnEnter="currentCard == gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.RoutineCard"
+        title="DisplayKey.get(&quot;Web.Rating.RateBooks.SelectedRateRoutinesTitle&quot;)">
+        <PanelRef
+          id="IncludedRateRoutinesPanel">
+          <Toolbar>
+            <SearchItem
+              id="rateRoutineSearch"
+              label="&quot;Search Rate Routines&quot;"
+              onFailure="CurrentLocation"
+              onResult="includedRateRoutines = rateBookUIHelper.setResultCalcRoutine(result as CalcRoutineDefinition[])"
+              search="rateBookUIHelper.filterCalcRoutine(searchText)"
+              validationError="null"/>
+          </Toolbar>
+          <ListViewPanel
+            id="IncludedRateRoutinesLV">
+            <RowIterator
+              editable="false"
+              elementName="rateRoutine"
+              id="IncludedRateRoutinesList"
+              value=" includedRateRoutines//rateBook != null ? rateBook.updatedCalcRoutines.orderBy(\ c -&gt; c.Name).toTypedArray() : gw.api.upgrade.Coercions.makeArray&lt;entity.CalcRoutineDefinition&gt;(java.util.Collections.EMPTY_LIST)"
+              valueType="entity.CalcRoutineDefinition[]">
+              <Row>
+                <TextCell
+                  action="RateRoutineDetail.go(rateRoutine, rateBook)"
+                  align="left"
+                  id="Name"
+                  label="DisplayKey.get(&quot;Web.Rating.RateRoutines.Name&quot;)"
+                  value="rateRoutine.Name"/>
+                <TextCell
+                  id="Code"
+                  label="DisplayKey.get(&quot;Web.Rating.RateRoutines.Code&quot;)"
+                  value="rateRoutine.Code">
+                </TextCell>
+                <TextCell
+                  id="Jurisdiction"
+                  label="DisplayKey.get(&quot;Web.Rating.RateRoutines.Jurisdiction&quot;)"
+                  value="rateRoutine.Jurisdiction"
+                  valueType="typekey.Jurisdiction"/>
+                <TextCell
+                  align="left"
+                  id="Version"
+                  label="DisplayKey.get(&quot;Web.Rating.RateRoutines.Version&quot;)"
+                  value="rateRoutine.Version"
+                  valueType="java.lang.Integer"/>
+                <TextCell
+                  id="Description"
+                  label="DisplayKey.get(&quot;Web.Rating.RateRoutines.Description&quot;)"
+                  value="rateRoutine.Description"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    canEdit="true"
+    canVisit="perm.User.exportadmindata and (gw.api.system.server.ServerModeUtil.isDev() or gw.api.system.server.ServerModeUtil.isTest())"
+    countsAsWork="false"
+    id="ExportRatingData"
+    parent="Admin()"
+    startInEditMode="true"
+    title="DisplayKey.get(&quot;Web.Admin.ExportRatingData_Ext&quot;)">
+    <LocationEntryPoint
+      signature="ExportRatingData()"/>
+    <Variable
+      initialValue="new gw.api.admin.ExportDataInfo()"
+      name="ExportDataInfo"
+      type="gw.api.admin.ExportDataInfo"/>
+    <Screen
+      id="ExportDataScreen">
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="ExportRatingDataDV(ExportDataInfo)">
+            <TitleBar
+              title="DisplayKey.get(&quot;Web.Admin.ExportDataDV.ExportDataMessage&quot;)"/>
+          </PanelRef>
+        </PanelColumn>
+      </PanelRow>
+    </Screen>
+  </Page>
+</PCF>

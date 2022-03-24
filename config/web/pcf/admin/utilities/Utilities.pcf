@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="pcf.xsd">
+  <LocationGroup
+    id="Utilities"
+    title="DisplayKey.get(&quot;Web.Admin.Utilities&quot;)">
+    <LocationRef
+      label="DisplayKey.get(&quot;Web.Admin.Utilities.ImportData&quot;)"
+      location="ImportWizard()"
+      shortcut="I"/>
+    <LocationRef
+      location="ExportData()"/>
+    <LocationRef
+      location="ExportRatingData()"/>
+    <LocationRef
+      location="ScriptParametersPage()"/>
+    <LocationRef
+      location="DataFlowMasks()"/>
+    <LocationRef
+      location="DataChangePage()"/>
+    <LocationRef
+      location="Properties()"/>
+    <LocationRef
+      location="InboundFileSearch()"/>
+    <LocationRef
+      location="OutboundFileSearch()"/>
+  </LocationGroup>
+</PCF>

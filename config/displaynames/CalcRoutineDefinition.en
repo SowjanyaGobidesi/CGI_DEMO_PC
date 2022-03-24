@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Entity
+  name="CalcRoutineDefinition">
+  <Columns>
+    <Column
+      beanPath="CalcRoutineDefinition.Code"
+      name="Code"/>
+    <Column
+      beanPath="CalcRoutineDefinition.PolicyLineDisplayName"
+      name="PolicyLine"/>
+  </Columns>
+  <DisplayName>gw.api.locale.DisplayKey.get("Web.Rating.RateRoutines.EntityName", Code, PolicyLine)</DisplayName>
+  <DisplayName type="RateBookExport">"Rate Routine ${Code}"</DisplayName>
+</Entity>
